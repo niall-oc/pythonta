@@ -7,7 +7,7 @@ Created on Mon Nov 15 16:14:00 2021
 """
 
 import argparse
-import json
+import yaml
 import datetime
 import time
 from rtta.harmonics import HarmonicPatterns
@@ -28,7 +28,7 @@ def handle_args():
     parser.add_argument("--formed", help="default is 1 to consider only formed paterns, 0 detects patterns forming")
     parser.add_argument("--limit_to", help="limit the search to patterns that completed in the las n candles, 0 for no limit")
     args = parser.parse_args()
-    configuration = json.load(open(args.config, 'r'))
+    configuration  = yaml.load(open(args.config, "r"), Loader=yaml.FullLoader)
     configuration['safe'] = True
     if args.symbol:
         configuration['symbols'] = [args.symbol]
