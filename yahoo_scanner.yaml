@@ -26,6 +26,7 @@ time_stamp_factor: 1000
 type: yahoo
 # This is an exhaustive list of ALL tickers currently supported by yahoo.  THis changes a lot.  I recommend you reduce this to your favs like AAPL, MSFT, TSLA e.t.c
 # the formatting is very specific. make sure there are no trailing spaces on a line eg - AAPL    <-
+# A single symbol can be searched by overridding this list using the --symbol flag.  --symbol MSFT
 symbols:
 - AAL
 - AAPL

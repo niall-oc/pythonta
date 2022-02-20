@@ -7,6 +7,7 @@ Created on Mon Nov 15 16:14:00 2021
 """
 
 import argparse
+import os
 import yaml
 import datetime
 import time
@@ -27,6 +28,8 @@ def handle_args():
     parser.add_argument("--interval", help="Overide the interval eg 1h, 15m, 1d")
     parser.add_argument("--formed", help="default is 1 to consider only formed paterns, 0 detects patterns forming")
     parser.add_argument("--limit_to", help="limit the search to patterns that completed in the las n candles, 0 for no limit")
+    parser.add_argument("--only", help="Can be set to bullish, bearish or all. Default is all trend directions")
+    parser.add_argument("--output_path", help="Changes the output folder. Directory must exist first, this forces you to double check what you are doing ;-)")
     args = parser.parse_args()
     configuration  = yaml.load(open(args.config, "r"), Loader=yaml.FullLoader)
     configuration['safe'] = True
@@ -38,6 +41,10 @@ def handle_args():
         configuration['formed'] = bool(int(args.formed))
     if args.limit_to:
         configuration['limit_to'] = int(args.limit_to)
+    if args.only:
+        configuration['only'] = args.only
+    if args.output_path:
+        configuration['output_path'] = args.output_path
         
     return configuration
 
@@ -86,7 +93,7 @@ def scan_patterns(configuration):
             p.add_peaks(h)
             p.add_obs(m.obs_values)
             filename = f"{symbol}_{configuration['interval']}.png"
-            image_path = f"{configuration['output_path']}/{filename}"
+            image_path = os.path.join(configuration['output_path'], filename)
             p.save_plot_image(image_path)
                 
         time.sleep(configuration['sleep_time'])
