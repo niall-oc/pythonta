@@ -1,0 +1,404 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Fri Oct 22 13:24:53 2021
+
+@author: xual
+"""
+
+from .ta_base import TABase
+
+class HarmonicPatterns(TABase):
+    """
+    Search for patterns that are M or W, abcd, OXABC e.t.c
+    """
+    
+    def __init__(self, mkt_data,  patterns=None, variance=.02):
+        """
+        
+
+        Parameters
+        ----------
+        market_data : MktDataBase
+            An instance of a market data object.
+
+        Returns
+        -------
+        None.
+
+        """
+        super(HarmonicPatterns, self).__init__(mkt_data)
+        if patterns: # option of load new configurations.
+            self.PATTERNS = patterns
+        else:
+            self. PATTERNS = {
+                "HARMONICS" : {
+                    "crab": {
+                        "XAB": {"min": 0.382, "max": 0.618},
+                        "ABC": {"min": 0.382, "max": 0.886},
+                        "BCD": {"min": 2.227, "max": 3.618},
+                        "XAD": {"min": 1.618, "max": 1.618}
+                    },
+                    "butterfly-deep": {
+                        "XAB": {"min": 0.786, "max": 0.786},
+                        "ABC": {"min": 0.382, "max": 0.886},
+                        "BCD": {"min": 1.618, "max": 2.618},
+                        "XAD": {"min": 1.618, "max": 1.618}
+                    },
+                    "butterfly": {
+                        "XAB": {"min": 0.786, "max": 0.786},
+                        "ABC": {"min": 0.382, "max": 0.886},
+                        "BCD": {"min": 1.618, "max": 2.618},
+                        "XAD": {"min": 1.27, "max": 1.27}
+                    },
+                    "bat": {
+                        "XAB": {"min": 0.382, "max": 0.50},
+                        "ABC": {"min": 0.382, "max": 0.886},
+                        "BCD": {"min": 1.618, "max": 2.618},
+                        "XAD": {"min": 0.886, "max": 0.886}
+                    },
+                    "gartley": {
+                        "XAB": {"min": 0.618, "max": 0.618},
+                        "ABC": {"min": 0.382, "max": 0.886},
+                        "BCD": {"min": 1.27, "max": 1.618},
+                        "XAD": {"min": 0.786, "max": 0.786}
+                    },
+                    "bartley": {
+                        "XAB": {"min": 0.618, "max": 0.681},
+                        "ABC": {"min": 0.382, "max": 0.886},
+                        "BCD": {"min": 1.27, "max": 2.618},
+                        "XAD": {"min": 0.886, "max": 0.886}
+                    }
+                },
+                
+                "CYPHERS": {
+                    "cypher": {
+                        "XAB": {"min": 0.382, "max": 0.618},
+                        "XAC": {"min": 1.13, "max": 1.417},
+                        "XCD": {"min": 0.786, "max": 0.786}
+                    }
+                },
+                
+                "SHARKS": {
+                    "shark": {
+                        "XAB": {"min": 0.386, "max": 0.618},
+                        "ABC": {"min": 1.13, "max": 1.13},
+                        "XAD": {"min": 0.886, "max": 0.886},
+                        "XCD": {"min": 0.886, "max": 0.886},
+                        "BCD": {"min": 1.618, "max": 2.227},
+                    },
+                    "shark-deep": {
+                        "XAB": {"min": 0.386, "max": 0.618},
+                        "ABC": {"min": 1.618, "max": 1.618},
+                        "XAD": {"min": 1.13, "max": 1.13},
+                        "XCD": {"min": 1.13, "max": 1.13},
+                        "BCD": {"min": 1.618, "max": 2.227},
+                    }
+                },
+                "ABCD":{
+                    "ABCD-382-1": {
+                        "ABC": {"min": 0.382, "max": 0.382},
+                        "BCD": {"min": 2.24, "max": 2.24},
+                    },
+                    "ABCD-382-2": {
+                        "ABC": {"min": 0.382, "max": 0.382},
+                        "BCD": {"min": 2.618, "max": 2.618},
+                    },
+                    "ABCD-50": {
+                        "ABC": {"min": 0.5, "max": 0.5},
+                        "BCD": {"min": 2, "max": 2},
+                    },
+                    "ABCD-618": {
+                        "ABC": {"min": 0.618, "max": 0.618},
+                        "BCD": {"min": 1.618, "max": 1.618},
+                    },
+                    "ABCD-707": {
+                        "ABC": {"min": 0.707, "max": 0.707},
+                        "BCD": {"min": 1.41, "max": 1.41},
+                    },
+                    "ABCD-786": {
+                        "ABC": {"min": 0.786, "max": 0.786},
+                        "BCD": {"min": 1.27, "max": 1.27},
+                    },
+                    "ABCD-886": {
+                        "ABC": {"min": 0.886, "max": 0.886},
+                        "BCD": {"min": 1.13, "max": 1.13},
+                    }
+                }
+            }
+        
+        # set pattern variance
+        for family, patterns in self.PATTERNS.items():
+            for pattern, legs in patterns.items():
+                for leg, details in legs.items():
+                    details["min"] = details["min"] * (1-variance)
+                    details["max"] = details["max"] * (1+variance)
+        # print(f"Variance={1-variance} - {1+variance} \n {self.PATTERNS}")
+        self.harmonics = self.PATTERNS['HARMONICS']
+        self.cyphers = self.PATTERNS['CYPHERS']
+        self.sharks = self.PATTERNS['SHARKS']
+    
+    def set_zone(self):
+        self.obs_values = [0] * len(self.df)
+        # Bullish
+        for pattern in self.get_patterns(formed=True):
+            if pattern['direction'] == 'bullish':
+                self.obs_values[pattern['idx'][-1]] -= 1
+            else:
+                self.obs_values[pattern['idx'][-1]] += 1
+    
+    def m_scan_from(self, D):
+        """
+        From the final point in the bullish M pattern we can traverse from D 
+        back to 0 and scan each peak to see if a pattern fits.
+        
+        As M patterns are found they are appended into an array
+
+        Parameters
+        ----------
+        D : int
+            Index of the final point in the M pattern.
+
+        Returns
+        -------
+        None.
+
+        """
+        for C in range(D-1, -1, -1):
+
+            if self.peak_prices[C] < self.peak_prices[D]:
+                break # Let C become D
+            elif self.peak_indexes[C] in self.highs and \
+                self.is_valid_swing(C, D, up=False): # C to D must be a downward leg
+                        
+                for B in range(C-1, -1, -1):
+            
+                    if self.peak_prices[B] > self.peak_prices[C]:
+                        # B must be lower than C
+                        break # let C become B
+                    elif self.peak_indexes[B] in self.lows and \
+                        self.is_valid_swing(B, C, up=True): # B to C must be an upward leg
+                        
+                        for A in range(B-1, -1, -1):
+                            
+                            if self.peak_prices[A] < self.peak_prices[B]: # Not a bull pattern
+                                break # Let A become B
+                            elif self.peak_indexes[A] in self.highs and \
+                                self.is_valid_swing(A, B, up=False): # A to B must be a downward leg
+                                pattern = self._is_abcd(A, B, C, D)
+                                if pattern:
+                                    self.add_pattern(pattern, 'bullish')
+                                    
+                                for X in range(A-1, -1, -1):
+                                    
+                                    if self.peak_prices[X] > self.peak_prices[A]: # Not a bull pattern
+                                        break # let X become A
+                                    elif self.peak_indexes[X] in self.lows and \
+                                        self.peak_prices[X] < self.peak_prices[B] and \
+                                        self.is_valid_swing(X, A, up=True): # Bat action magnet
+
+                                        pattern = self._is_5_harmonic(X, A, B, C, D)
+                                        if pattern:
+                                            self.add_pattern(pattern, 'bullish')
+                                        
+                                        pattern = self._is_abcd(X, A, B, C)
+                                        if pattern:
+                                            self.add_pattern(pattern, 'bearish')
+
+    
+    def w_scan_from(self, D):
+        """
+        From the final point in the bearish W pattern we can traverse from D 
+        back to 0 and scan each peak to see if a pattern fits.
+        
+        As W patterns are found they are appended into an array
+
+        Parameters
+        ----------
+        D : int
+            Index of the final point in the M pattern.
+
+        Returns
+        -------
+        None.
+
+        """
+        for C in range(D-1, -1, -1):
+
+            if self.peak_prices[C] > self.peak_prices[D]:
+                break # Let C become D
+            elif self.peak_indexes[C] in self.lows and \
+                self.is_valid_swing(C, D, up=True): # C to D must be a upward leg
+                        
+                for B in range(C-1, -1, -1):
+            
+                    if self.peak_prices[B] < self.peak_prices[C]:
+                        break # let C become B
+                    elif self.peak_indexes[B] in self.highs and \
+                        self.is_valid_swing(B, C, up=False): # B to C must be an downward leg
+                        
+                        for A in range(B-1, -1, -1):
+                            
+                            if self.peak_prices[A] > self.peak_prices[B]: # Not a bull pattern
+                                break # Let A become B
+                            elif self.peak_indexes[A] in self.lows and \
+                                self.is_valid_swing(A, B, up=True): # A to B must be a downward leg
+                                # possible ABCD formation
+                                pattern = self._is_abcd(A, B, C, D)
+                                if pattern:
+                                    self.add_pattern(pattern, 'bearish')
+                                
+                                for X in range(A-1, -1, -1):
+                                    
+                                    if self.peak_prices[X] < self.peak_prices[A]: # Not a bull pattern
+                                        break # let X become A
+                                    elif self.peak_indexes[X] in self.highs and \
+                                        self.peak_prices[X] > self.peak_prices[B] and \
+                                        self.is_valid_swing(X, A, up=False): # Bat action magnet
+
+                                        pattern = self._is_5_harmonic(X, A, B, C, D)
+                                        if pattern:
+                                            self.add_pattern(pattern, 'bearish')
+                                        
+                                        pattern = self._is_abcd(X, A, B, C)
+                                        if pattern:
+                                            self.add_pattern(pattern, 'bullish')
+                                            
+    def add_pattern(self, pattern, direction):
+        pattern.update(dict(
+            direction=direction,
+            peak_indexes = [self.peak_indexes[n] for n in pattern['idx']],
+            peak_prices = [self.peak_prices[n] for n in pattern['idx']]
+        ))
+        pattern.update({
+            'pcz_price': pattern['peak_prices'][-1],
+            'target': min(pattern['peak_prices']) if direction == 'bearish' else max(pattern['peak_prices'])
+        })
+        if direction == 'bullish':
+            self.obs_values[pattern['peak_indexes'][-1]] -= 1
+        else:
+            self.obs_values[pattern['peak_indexes'][-1]] += 1
+        self.found.append(pattern)
+        
+    def search(self, time_limit=0, formed=True, only='all'):
+        """
+        Working backwards through the trend until while the D leg is still later
+        than the time limit. Scan for bull if D is a low or bear patterns if D
+        is a high.
+        
+        """
+        MAX = len(self.peak_indexes)
+        d_len = len(self.mkt_data.df)
+        time_limit = d_len - time_limit if time_limit else time_limit
+        for D in range(MAX-1, -1, -1):
+            # First only follow paths where D is recent enough.
+            if self.peak_indexes[D] < time_limit:
+                break
+            else:
+                if self.peak_indexes[D] in self.lows: 
+                    # If D is a low point for a leg up
+                    self.m_scan_from(D)
+                else:
+                    # D is a high point for a leg down.
+                    self.w_scan_from(D)
+        return self.get_patterns(formed=formed, only=only)
+    
+    def _match(self, retrace, stage, pattern_class, limit=None):
+        """
+        
+    
+        Parameters
+        ----------
+        retrace : TYPE
+            DESCRIPTION.
+        stage : TYPE
+            DESCRIPTION.
+    
+        Returns
+        -------
+        None.
+    
+        """
+        fit = set()
+        for pattern, legs in self.PATTERNS[pattern_class].items():
+            if limit and pattern not in limit:
+                continue
+                # print(stage, 'ignore ', pattern)
+            elif legs[stage]['min'] <= retrace and retrace <= legs[stage]['max']:
+                fit.add(pattern)
+        return fit
+    
+    def _is_abcd(self, A, B, C, D):
+        """
+        Finds the price range of each leg, calculates the retrace values and
+        looks for a harmonic match
+        """
+        pattern = False
+        AB = abs(self.peak_prices[A] - self.peak_prices[B])
+        BC = abs(self.peak_prices[B] - self.peak_prices[C])
+        # AD = abs(self.peak_prices[A] - self.peak_prices[D])
+        CD = abs(self.peak_prices[C] - self.peak_prices[D])
+        if 0.0 in (AB, BC): # double top or double bottom
+            return pattern
+        retraces = dict(
+            ABC = BC/AB,
+            BCD = CD/BC,
+        )
+        fits = self._match(retraces['ABC'], 'ABC', 'ABCD')
+        if fits:
+            pattern = dict(stage='forming', type=list(fits), idx=(A, B, C, D), retraces=retraces)
+            fits = self._match(retraces['BCD'], 'BCD', 'ABCD', limit=fits)
+            if fits:
+                # print(status)
+                pattern.update({'stage': 'formed', 'type': list(fits)})
+        return pattern
+    
+    def _is_5_harmonic(self, X, A, B, C, D):
+        """
+        Finds the price range of each leg, calculates the retrace values and
+        looks for a harmonic match
+        """
+        pattern = False
+        XA = abs(self.peak_prices[X] - self.peak_prices[A])
+        AB = abs(self.peak_prices[A] - self.peak_prices[B])
+        BC = abs(self.peak_prices[B] - self.peak_prices[C])
+        AD = abs(self.peak_prices[A] - self.peak_prices[D])
+        XC = abs(self.peak_prices[X] - self.peak_prices[C])
+        CD = abs(self.peak_prices[C] - self.peak_prices[D])
+        if 0.0 in (XA, AB, BC, AD, XC, CD): # double top or double bottom
+            return pattern
+        retraces = dict(
+            XAB = AB/XA,
+            XAD = AD/XA,
+            XCD = CD/XC,
+            ABC = BC/AB,
+            XAC = XC/XA,
+        )
+        fits = self._match(retraces['XAB'], 'XAB', 'HARMONICS')
+        fits = fits | self._match(retraces['XAB'], 'XAB', 'CYPHERS')
+        fits = fits | self._match(retraces['XAB'], 'XAB', 'SHARKS')
+        if fits:
+            h_fits = fits & self._match(retraces['ABC'], 'ABC', 'HARMONICS', limit=fits)
+            c_fits = fits & self._match(retraces['XAC'], 'XAC', 'CYPHERS', limit=fits)
+            s_fits = fits & self._match(retraces['ABC'], 'ABC', 'SHARKS', limit=fits)
+            fits = h_fits | c_fits | s_fits
+            if fits:
+                h_fits = fits & self._match(retraces['XAD'], 'XAD', 'HARMONICS', limit=fits)
+                c_fits = fits & self._match(retraces['XCD'], 'XCD', 'CYPHERS', limit=fits)
+                s_fits = fits & self._match(retraces['XCD'], 'XCD', 'SHARKS', limit=fits)
+                fits = h_fits | c_fits | s_fits
+                pattern = dict(stage='forming', type=list(fits), idx=(X, A, B, C, D), retraces=retraces)
+                if fits:
+                    # print(status)
+                    pattern.update({'stage': 'formed', 'type': list(fits)})
+        
+        return pattern
+    
+    def get_patterns(self, formed=True, only=None):
+        patterns = self.found
+        if formed:
+            patterns =  [p for p in patterns if p['stage'] == 'formed']
+        if only in ('bullish', 'bearish',):
+            patterns = [p for p in patterns if p['direction'] == only]
+        return patterns
+                        
