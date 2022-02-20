@@ -27,15 +27,15 @@ class Binance(MktDataBase):
         super(Binance, self).__init__(indicator_config=indicator_config)
         if schema is None:
             self.schema = [
-                {"name": "open_time", "type":"int"},
+                {"name": "open_time", "type":"int64"},
                 {"name": "open", "type":"float"},
                 {"name": "high", "type":"float"},
                 {"name": "low", "type":"float"},
                 {"name": "close", "type":"float"},
                 {"name": "volume", "type":"float"},
-                {"name": "close_time", "type":"int"},
+                {"name": "close_time", "type":"int64"},
                 {"name": "quote_asset_volume", "type":"float"},
-                {"name": "number_of_trades", "type":"int"},
+                {"name": "number_of_trades", "type":"int64"},
                 {"name": "taker_base_asset_volume", "type":"float"},
                 {"name": "taker_quote_asset_colume", "type":"float"},
                 {"name": "ignore", "type":"float"}
