@@ -10,7 +10,9 @@ This package is a simple set of commandline tools that can used to scan OHLC sto
 
 ## Installation
 
-insert video.
+Follow the video guide
+
+https://youtu.be/WQ4W04JqZ7o
 
 Git clone the project then cd into the cloned folder - OR - download the project zip and use the command line to reach the project folder.
 
