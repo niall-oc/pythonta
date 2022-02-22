@@ -11,6 +11,7 @@ This package is a simple set of commandline tools that can used to scan OHLC sto
 ## Installation
 
 Follow the video guide
+<iframe width="560" height="315" src="https://www.youtube.com/embed/WQ4W04JqZ7o" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 https://youtu.be/WQ4W04JqZ7o
 
