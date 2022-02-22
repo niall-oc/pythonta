@@ -12,7 +12,7 @@ This package is a simple set of commandline tools that can used to scan OHLC sto
 
 Follow the video guide
 
-[![Windows Installation Guide](https://img.youtube.com/embed/WQ4W04JqZ7o/0.jpg)](https://www.youtube.com/embed/WQ4W04JqZ7o)
+[![Windows Installation Guide]](https://www.youtube.com/embed/WQ4W04JqZ7o)
 
 https://youtu.be/WQ4W04JqZ7o
 
@@ -32,3 +32,6 @@ There are yaml config files for scanning assets on both binance and yahoo.  Open
  --only, Can be set to bullish, bearish or all. Default is all trend directions --only all
  --output_path, Changes the output folder. Directory must exist first, this forces you to double check what you are doing ;-)
  ```
+
+## Bot posts scans to twitter
+twitter.com/ZechsMarquie
