@@ -7,7 +7,9 @@ A simple set of libraries coded around yfinance and the binance-connector pip pa
 ![This is an image](./images/BTCUSDT_1d.png)
 
 ## What it is not!
-This library is **NOT FINANCIAL ADVICE!** This library can detect patterns and that is all.  Nobody in the world, not even with machine learning, can predict where a stock trend is going to move.  Anyone who says they can is a liar.  There is no certainty in fincial markets.  Please do not use this tool with the false assumption that it will tell you how to trade.  The tool will merely show you what trends have occured ( **past tense** )
+This library is **NOT FINANCIAL ADVICE!** This library can detect patterns and that is all.  Nobody in the world, not even with machine learning, can predict where a stock trend is going to move.  Anyone who says they can is a liar.  **There is no certainty in fiancial markets**.  Please do not use this tool with the false assumption that you will learn how to trade.  The tool will merely show you what trends have occured ( **past tense** ).
+
+For more on harmonics or trading visit [Technical Analysis with Mitch Ray](http://mitchrayta.com) and [Scott Carney's Harmonic Trader](http://www.harmonictrader.com)
 
 
 ## Installation
@@ -15,7 +17,7 @@ This library is **NOT FINANCIAL ADVICE!** This library can detect patterns and t
 ### Windows
 Follow the video guide
 
-[![Windows Installation Guide]](https://www.youtube.com/embed/WQ4W04JqZ7o)
+[Windows Installation Guide](https://www.youtube.com/embed/WQ4W04JqZ7o)
 
 https://youtu.be/WQ4W04JqZ7o
 
