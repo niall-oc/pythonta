@@ -4,6 +4,8 @@ Python tool kit for TA
 ## What it is?
 A simple set of libraries coded around yfinance and the binance-connector pip packages that detect harmonic patterns in stock trends.  The scans are published as images on your PC for you to review.
 
+![This is an image](./images/BTCUSDT_1d.png)
+
 ## What it is not!
 This library is **NOT FINANCIAL ADVICE!** This library can detect patterns and that is all.  Nobody in the world, not even with machine learning, can predict where a stock trend is going to move.  Anyone who says they can is a liar.  There is no certainty in fincial markets.  Please do not use this tool with the false assumption that it will tell you how to trade.  The tool will merely show you what trends have occured ( **past tense** )
 
