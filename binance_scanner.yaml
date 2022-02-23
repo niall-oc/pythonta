@@ -13,9 +13,9 @@ only: all
 output_path: /home/xual/Pictures/patterns
 # This is the percentage that harmonic patterns can vary by. or 1.5% variance a shark pattern that would retrace at 1.13 of the XA leg can go 1.5 percent further.
 # Increasing this captures more patterns but they may be less reliable
-pattern_variance: 0.015
+pattern_variance: 0.03
 # Increasing this number means the peak sensitivity is reduced. Ie. there is more space between peaks. This increases performance but may miss patterns.
-peak_spacing: 6
+peak_spacing: 8
 # Biance can return up to 1000 candles for a given interval.  I may wrap this in a new variable in a future release. For now 1000 is the limit
 num_ticks: 1000
 # Time to sleep between api calls.  I recommend no less than .3 of a second.  This stops the api end point from throttling your requests.
