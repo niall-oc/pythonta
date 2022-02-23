@@ -67,3 +67,11 @@ Using the command promt on windows or the shell on linux.
 ## Bot posts scans to twitter
 [Twitter bot](http://twitter.com/ZechsMarquie) is my twitter account which my bot posts to. Going forward I'm going to make this a daily thing with top crypto and stonks!
 
+# Future thangs!
+Patch this code base
+- [ ] Patch - Remove Duplicate peaks created by argrelextrema so search is faster.
+
+New code base
+- [ ] Test first!  The new code base is test driven so that more can participate.
+- [ ] Add hooks for storing patterns in mongodb for historical analysis.
+- [ ] Add webserver for locally running UI
