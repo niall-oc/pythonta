@@ -71,7 +71,7 @@ Using the command promt on windows or the shell on linux.
 
 # Future thangs!
 Patch this code base
-- [ ] Patch - Remove Duplicate peaks created by argrelextrema so search is faster.
+- [x] Patch - Remove Duplicate peaks created by argrelextrema so search is faster.
 
 New code base
 - [ ] Test first!  The new code base is test driven so that more can participate.

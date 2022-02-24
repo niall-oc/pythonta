@@ -128,14 +128,23 @@ class MktDataBase:
         list of tuples, peak_idx, peak_price
 
         """
-        self.highs = list(argrelextrema(self.df[self.HIGH].values, np.greater_equal, order=peak_spacing)[0])
+        self.highs = list(argrelextrema(self.df[self.HIGH].values, np.greater_equal, order=peak_spacing)[0]) 
         self.lows = list(argrelextrema(self.df[self.LOW].values, np.less_equal, order=peak_spacing)[0])
         idxes = sorted(
             list(zip(self.highs, self.df[self.HIGH].values[self.highs])) +\
             list(zip(self.lows, self.df[self.LOW].values[self.lows]))
         )
-        self.peak_prices = [float(p[1]) for p in idxes]
-        self.peak_indexes = [int(p[0]) for p in idxes]
+        peak_prices = [float(p[1]) for p in idxes]
+        peak_indexes = [int(p[0]) for p in idxes]
+        
+        # Remove duplicates that cause slower search times.
+        self.peak_prices = []; self.peak_indexes = []
+        for i in range(1, len(peak_prices)):
+            if peak_prices[i-1] != peak_prices[i]:
+                self.peak_prices.append(peak_prices[i])
+                self.peak_indexes.append(peak_indexes[i])
+        
+        
     
     def set_indicators(self, indicator_config=None):
         if indicator_config:
