@@ -34,7 +34,7 @@ def handle_args():
     parser.add_argument("--peak_spacing", help="Peak finding sensitivity.  The lower the number the more peaks are found. This can increase the search time and add too much noise")
     
     args = parser.parse_args()
-    configuration  = yaml.load(open("args.config", "r"), Loader=yaml.FullLoader)
+    configuration  = yaml.load(open(args.config, "r"), Loader=yaml.FullLoader)
     
     if args.symbol:
         configuration['symbols'] = [args.symbol]
