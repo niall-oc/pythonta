@@ -1,0 +1,9 @@
+# A compact list of populr coins and symbols combined into one list.
+# Ensure that crypto binance sumbols stay in the binance area of the file, and similar for yahoo symbols.
+binance:
+    - ADAUSDT
+    - BTCUSDT
+yahoo:
+    # AUTO
+    - TSLA
+    - BAC

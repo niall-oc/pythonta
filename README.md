@@ -41,18 +41,10 @@ There are yaml config files for scanning assets on both binance and yahoo.  Open
 
 ```output_path: /home/me/Pictures/Patterns```
 
-### Command line parameters
-```--symbol``` - Override the list of symbols in the yaml file and instead scan for only one symbol - ```--symbol MSFT```. Be sure that you can for a symbol that matches. _NOTE: the ```type: yahoo``` field in teh config file should match the assets you are scanning.  Crypto is on binance and stocks are on yahoo._
-
-```--interval``` - Overide the interval eg 1h, 15m, 1d - ```--interval 1h```
-
-```--formed``` - default is 1 to consider only formed paterns, 0 detects patterns forming - ```--formed 1``` is the default and ```--formed 0``` would also scan patterns that are forming ( of which there are many ).
-
-```--limit_to``` - limit the search to patterns that completed in the last n candles, 0 for no limit -  ```--limit_to 10``` would limit the search to patterns that completed in the last 10 candles.  When coupled with ```--interval 1h``` this would mean patterns that completed in the last 10 hours.
-
-```--only``` - Can be set to bullish, bearish or all. Default is all trend directions - ```--only all``` will scan for every trend direction. ```--only bullish``` for only bull patterns ( you optimist! ), ```--only bearish``` will show bearish patterns ( you know that shorting is being bullish in a bear market!
-
-```--output_path``` - Changes the output folder. Directory must exist first, this forces you to double check what you are doing ;-) - ```--output_path /home/user/patterns/4hscans``` can print all your outputs to that folder.
+### Settings
+*. ```settings.yaml``` contains all instructions.
+*. ```markets.yaml``` lists asset data to scan, is referred to in the settings file and has override instructions contained within.
+*. ```harmonics.yaml``` fibonnaci retracement config for harmonic patterns. Again referred to in settings file and contains instrucions.
 
 ## Using the tool
 
@@ -72,6 +64,7 @@ Using the command promt on windows or the shell on linux.
 # Future thangs!
 Patch this code base
 - [x] Patch - Remove Duplicate peaks created by argrelextrema so search is faster.
+- [x] Improve - Config better laid out in yaml.  Harmonic retracements can be edited in yaml configs.
 
 New code base
 - [ ] Test first!  The new code base is test driven so that more can participate.

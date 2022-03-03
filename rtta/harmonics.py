@@ -28,104 +28,101 @@ class HarmonicPatterns(TABase):
 
         """
         super(HarmonicPatterns, self).__init__(mkt_data)
-        if patterns: # option of load new configurations.
-            self.PATTERNS = patterns
-        else:
-            self. PATTERNS = {
-                "HARMONICS" : {
-                    "crab": {
-                        "XAB": {"min": 0.382, "max": 0.618},
-                        "ABC": {"min": 0.382, "max": 0.886},
-                        "BCD": {"min": 2.227, "max": 3.618},
-                        "XAD": {"min": 1.618, "max": 1.618}
-                    },
-                    "butterfly-deep": {
-                        "XAB": {"min": 0.786, "max": 0.786},
-                        "ABC": {"min": 0.382, "max": 0.886},
-                        "BCD": {"min": 1.618, "max": 2.618},
-                        "XAD": {"min": 1.618, "max": 1.618}
-                    },
-                    "butterfly": {
-                        "XAB": {"min": 0.786, "max": 0.786},
-                        "ABC": {"min": 0.382, "max": 0.886},
-                        "BCD": {"min": 1.618, "max": 2.618},
-                        "XAD": {"min": 1.27, "max": 1.27}
-                    },
-                    "bat": {
-                        "XAB": {"min": 0.382, "max": 0.50},
-                        "ABC": {"min": 0.382, "max": 0.886},
-                        "BCD": {"min": 1.618, "max": 2.618},
-                        "XAD": {"min": 0.886, "max": 0.886}
-                    },
-                    "gartley": {
-                        "XAB": {"min": 0.618, "max": 0.618},
-                        "ABC": {"min": 0.382, "max": 0.886},
-                        "BCD": {"min": 1.27, "max": 1.618},
-                        "XAD": {"min": 0.786, "max": 0.786}
-                    },
-                    "bartley": {
-                        "XAB": {"min": 0.618, "max": 0.681},
-                        "ABC": {"min": 0.382, "max": 0.886},
-                        "BCD": {"min": 1.27, "max": 2.618},
-                        "XAD": {"min": 0.886, "max": 0.886}
-                    }
+        self.PATTERNS = patterns or {
+            "HARMONICS" : {
+                "crab": {
+                    "XAB": {"min": 0.382, "max": 0.618},
+                    "ABC": {"min": 0.382, "max": 0.886},
+                    "BCD": {"min": 2.227, "max": 3.618},
+                    "XAD": {"min": 1.618, "max": 1.618}
                 },
-                
-                "CYPHERS": {
-                    "cypher": {
-                        "XAB": {"min": 0.382, "max": 0.618},
-                        "XAC": {"min": 1.13, "max": 1.417},
-                        "XCD": {"min": 0.786, "max": 0.786}
-                    }
+                "butterfly-deep": {
+                    "XAB": {"min": 0.786, "max": 0.786},
+                    "ABC": {"min": 0.382, "max": 0.886},
+                    "BCD": {"min": 1.618, "max": 2.618},
+                    "XAD": {"min": 1.618, "max": 1.618}
                 },
-                
-                "SHARKS": {
-                    "shark": {
-                        "XAB": {"min": 0.386, "max": 0.618},
-                        "ABC": {"min": 1.13, "max": 1.13},
-                        "XAD": {"min": 0.886, "max": 0.886},
-                        "XCD": {"min": 0.886, "max": 0.886},
-                        "BCD": {"min": 1.618, "max": 2.227},
-                    },
-                    "shark-deep": {
-                        "XAB": {"min": 0.386, "max": 0.618},
-                        "ABC": {"min": 1.618, "max": 1.618},
-                        "XAD": {"min": 1.13, "max": 1.13},
-                        "XCD": {"min": 1.13, "max": 1.13},
-                        "BCD": {"min": 1.618, "max": 2.227},
-                    }
+                "butterfly": {
+                    "XAB": {"min": 0.786, "max": 0.786},
+                    "ABC": {"min": 0.382, "max": 0.886},
+                    "BCD": {"min": 1.618, "max": 2.618},
+                    "XAD": {"min": 1.27, "max": 1.27}
                 },
-                "ABCD":{
-                    "ABCD-382-1": {
-                        "ABC": {"min": 0.382, "max": 0.382},
-                        "BCD": {"min": 2.24, "max": 2.24},
-                    },
-                    "ABCD-382-2": {
-                        "ABC": {"min": 0.382, "max": 0.382},
-                        "BCD": {"min": 2.618, "max": 2.618},
-                    },
-                    "ABCD-50": {
-                        "ABC": {"min": 0.5, "max": 0.5},
-                        "BCD": {"min": 2, "max": 2},
-                    },
-                    "ABCD-618": {
-                        "ABC": {"min": 0.618, "max": 0.618},
-                        "BCD": {"min": 1.618, "max": 1.618},
-                    },
-                    "ABCD-707": {
-                        "ABC": {"min": 0.707, "max": 0.707},
-                        "BCD": {"min": 1.41, "max": 1.41},
-                    },
-                    "ABCD-786": {
-                        "ABC": {"min": 0.786, "max": 0.786},
-                        "BCD": {"min": 1.27, "max": 1.27},
-                    },
-                    "ABCD-886": {
-                        "ABC": {"min": 0.886, "max": 0.886},
-                        "BCD": {"min": 1.13, "max": 1.13},
-                    }
+                "bat": {
+                    "XAB": {"min": 0.382, "max": 0.50},
+                    "ABC": {"min": 0.382, "max": 0.886},
+                    "BCD": {"min": 1.618, "max": 2.618},
+                    "XAD": {"min": 0.886, "max": 0.886}
+                },
+                "gartley": {
+                    "XAB": {"min": 0.618, "max": 0.618},
+                    "ABC": {"min": 0.382, "max": 0.886},
+                    "BCD": {"min": 1.27, "max": 1.618},
+                    "XAD": {"min": 0.786, "max": 0.786}
+                },
+                "bartley": {
+                    "XAB": {"min": 0.618, "max": 0.681},
+                    "ABC": {"min": 0.382, "max": 0.886},
+                    "BCD": {"min": 1.27, "max": 2.618},
+                    "XAD": {"min": 0.886, "max": 0.886}
+                }
+            },
+            
+            "CYPHERS": {
+                "cypher": {
+                    "XAB": {"min": 0.382, "max": 0.618},
+                    "XAC": {"min": 1.13, "max": 1.417},
+                    "XCD": {"min": 0.786, "max": 0.786}
+                }
+            },
+            
+            "SHARKS": {
+                "shark": {
+                    "XAB": {"min": 0.386, "max": 0.618},
+                    "ABC": {"min": 1.13, "max": 1.13},
+                    "XAD": {"min": 0.886, "max": 0.886},
+                    "XCD": {"min": 0.886, "max": 0.886},
+                    "BCD": {"min": 1.618, "max": 2.227},
+                },
+                "shark-deep": {
+                    "XAB": {"min": 0.386, "max": 0.618},
+                    "ABC": {"min": 1.618, "max": 1.618},
+                    "XAD": {"min": 1.13, "max": 1.13},
+                    "XCD": {"min": 1.13, "max": 1.13},
+                    "BCD": {"min": 1.618, "max": 2.227},
+                }
+            },
+            "ABCD":{
+                "ABCD-382-1": {
+                    "ABC": {"min": 0.382, "max": 0.382},
+                    "BCD": {"min": 2.24, "max": 2.24},
+                },
+                "ABCD-382-2": {
+                    "ABC": {"min": 0.382, "max": 0.382},
+                    "BCD": {"min": 2.618, "max": 2.618},
+                },
+                "ABCD-50": {
+                    "ABC": {"min": 0.5, "max": 0.5},
+                    "BCD": {"min": 2, "max": 2},
+                },
+                "ABCD-618": {
+                    "ABC": {"min": 0.618, "max": 0.618},
+                    "BCD": {"min": 1.618, "max": 1.618},
+                },
+                "ABCD-707": {
+                    "ABC": {"min": 0.707, "max": 0.707},
+                    "BCD": {"min": 1.41, "max": 1.41},
+                },
+                "ABCD-786": {
+                    "ABC": {"min": 0.786, "max": 0.786},
+                    "BCD": {"min": 1.27, "max": 1.27},
+                },
+                "ABCD-886": {
+                    "ABC": {"min": 0.886, "max": 0.886},
+                    "BCD": {"min": 1.13, "max": 1.13},
                 }
             }
+        }
         
         # set pattern variance
         for family, patterns in self.PATTERNS.items():
