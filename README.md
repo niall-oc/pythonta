@@ -42,9 +42,9 @@ There are yaml config files for scanning assets on both binance and yahoo.  Open
 ```output_path: /home/me/Pictures/Patterns```
 
 ### Settings
-*. ```settings.yaml``` contains all instructions.
-*. ```markets.yaml``` lists asset data to scan, is referred to in the settings file and has override instructions contained within.
-*. ```harmonics.yaml``` fibonnaci retracement config for harmonic patterns. Again referred to in settings file and contains instrucions.
+* ```settings.yaml``` contains all instructions.
+* ```markets.yaml``` lists asset data to scan, is referred to in the settings file and has override instructions contained within.
+* ```harmonics.yaml``` fibonnaci retracement config for harmonic patterns. Again referred to in settings file and contains instrucions.
 
 ## Using the tool
 
