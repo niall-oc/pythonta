@@ -123,9 +123,9 @@ def scan_patterns(configuration, market, symbols):
 if __name__ == '__main__':
     start_time = datetime.datetime.now()
     # Runtime
-    # configuration = handle_args()
+    configuration = handle_args()
     # VS CODE debugging!! :-|
-    configuration = debug_args("debug_settings.yaml")
+    # configuration = debug_args("debug_settings.yaml")
     for market, symbols in configuration['markets'].items():
         scan_patterns(configuration, market, symbols)
     print(datetime.datetime.now() - start_time)
