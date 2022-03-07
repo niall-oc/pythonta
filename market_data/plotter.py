@@ -9,41 +9,40 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import plotly.io as pio
 
+from market_data.market_data_base import MktDataBase
+
 class Plotter:
 
-    def __init__(self, mkt_data):
+    def __init__(self, mkt_data, row_map=None, colors=None):
         self.mkt_data = mkt_data
         self.title = f"{self.mkt_data.symbol} {self.mkt_data.interval}"
         self.harmonics = None
         self.divergences = None
-        self.VOLUME_ROW = 2
-        self.MACD_ROW = 3
-        self.RSI_ROW = 4
-        self.MFI_ROW = 5
-        self.ROW_MAP = {
-            'macd': self.MACD_ROW,
-            'volume': self.VOLUME_ROW,
-            'rsi': self.RSI_ROW,
-            'mfi': self.MFI_ROW
+        self.ROW_MAP = row_map or {
+            'macd': 3,
+            'volume': 2,
+            'rsi': 4,
+            'mfi': 5,
+            'obs': 6
         }
         self.set_main_plot()
-        self.colors = { 
+        self.colors = colors or { 
             'bearish': {
-                'formed': {
+                True: { # formed
                     'line' : 'rgba(255, 127, 0, 0.6)',
                     'fill': 'rgba(255, 127, 0, 0.2)'
                 },
-                'forming': {
+                False: { # forming
                     'line': 'rgba(200, 0, 200, 0.6)',
                     'fill': 'rgba(200, 0, 200, 0.2)'
                 }
             },
             'bullish': {
-                'formed': {
+                True: { # formed
                     'line' : 'rgba(0, 255, 0, 0.6)',
                     'fill': 'rgba(0, 255, 0, 0.2)'
                 },
-                'forming': {
+                False: { # forming
                     'line': 'rgba(200, 200, 0, 0.6)',
                     'fill': 'rgba(200, 200, 0, 0.2)'
                 }
@@ -76,18 +75,16 @@ class Plotter:
                 y=self.mkt_data.df[self.mkt_data.VOLUME],
                 marker_color=colors
             ), 
-            row=2, col=1
+            row=self.ROW_MAP['volume'], col=1
         )
         self.main_plot.update_yaxes(title_text="Volume", row=2, col=1)
         # Plot MACD trace on 3rd row
-        self.plot_row = 2
         if self.mkt_data.macd:
-            self.plot_row += 1
             colors = ['lightgreen' if val >= 0 else '#ff7766' for val in self.mkt_data.macd.macd_diff()]
             self.main_plot.add_trace(go.Bar(x=self.mkt_data.df.index, 
                                  y=self.mkt_data.macd.macd_diff(),
                                  marker_color=colors
-                                ), row=self.plot_row, col=1)
+                                ), row=self.ROW_MAP['macd'], col=1)
             # MACD Diff is enough for divergences
             #self.main_plot.add_trace(go.Scatter(x=self.mkt_data.df.index,
             #                         y=self.mkt_data.macd.macd(),
@@ -97,42 +94,40 @@ class Plotter:
             #                         y=self.mkt_data.macd.macd_signal(),
             #                         line=dict(color='pink', width=1)
             #                        ), row=3, col=1)
-            self.main_plot.update_yaxes(title_text="MACD", showgrid=False, row=self.plot_row, col=1)
+            self.main_plot.update_yaxes(title_text="MACD", showgrid=False, row=self.ROW_MAP['macd'], col=1)
         if self.mkt_data.rsi:
-            self.plot_row += 1
             # Plot stochastics trace on 4th row
             self.main_plot.add_trace(go.Scatter(x=self.mkt_data.df.index,
                                      y=self.mkt_data.rsi.rsi(),
                                      line=dict(color='yellow', width=2)
-                                    ), row=self.plot_row, col=1)
-            self.main_plot.update_yaxes(title_text="RSI", row=self.plot_row, col=1)
+                                    ), row=self.ROW_MAP['rsi'], col=1)
+            self.main_plot.update_yaxes(title_text="RSI", row=self.ROW_MAP['rsi'], col=1)
         if self.mkt_data.mfi:
-            self.plot_row += 1
             # Plot stochastics trace on 4th row
             self.main_plot.add_trace(go.Scatter(x=self.mkt_data.df.index,
                                      y=self.mkt_data.mfi.chaikin_money_flow(),
                                      line=dict(color='cyan', width=2)
-                                    ), row=self.plot_row, col=1)
-            self.main_plot.update_yaxes(title_text="MFI", row=self.plot_row, col=1)
-            
-    def add_harmonic_plots(self, harmonics):
-        self.title = f"{self.title}  -  {len(harmonics)} harmonics"
-        for h in harmonics:                
-            if len(h['peak_indexes']) == 5:
+                                    ), row=self.ROW_MAP['mfi'], col=1)
+            self.main_plot.update_yaxes(title_text="MFI", row=self.ROW_MAP['mfi'], col=1)
+
+    def add_harmonic_plots(self, patterns):
+        self.title = f"{self.title}  -  {len(patterns)} harmonics"
+        for p in patterns:                
+            if len(p.idx) == 5:
                 # 5 point m or w formations
-                text = [f'X {h["peak_prices"][0]}', f'A {str(h["type"])}', f"B {h['retraces']['XAB']:0.3f}", f"C {h['retraces']['ABC']:0.3f}", f"D {h['retraces']['XAD']:0.3f}"]
-                lt = h['peak_indexes'][0:3]+h['peak_indexes'][:1]
-                rt = h['peak_indexes'][2:]+h['peak_indexes'][2:3]
-                lp = h['peak_prices'][0:3]+h['peak_prices'][:1]
-                rp = h['peak_prices'][2:]+h['peak_prices'][2:3]
+                text = [f'X {p.y[0]}', f'A {p.name}', f"B {p.retraces['XAB']:0.3f}", f"C {p.retraces['ABC']:0.3f}", f"D {p.retraces['XAD']:0.3f}"]
+                lt = p.idx[0:3]+p.idx[:1]
+                rt = p.idx[2:]+p.idx[2:3]
+                lp = p.y[0:3]+p.y[:1]
+                rp = p.y[2:]+p.y[2:3]
                 self.main_plot.add_trace(
                     go.Scatter(
                         mode="lines+markers+text",
                         x=self.mkt_data.df.index.values[lt],
                         y=lp,
                         fill="toself",
-                        fillcolor=self.colors[h['direction']][h['stage']]['fill'],
-                        line=dict(color=self.colors[h['direction']][h['stage']]['line'], width=2),
+                        fillcolor=self.colors[p.direction][p.formed]['fill'],
+                        line=dict(color=self.colors[p.direction][p.formed]['line'], width=2),
                         text=text[0:3],
                         textposition="top center"
                     )
@@ -143,41 +138,41 @@ class Plotter:
                         x=self.mkt_data.df.index.values[rt],
                         y=rp,
                         fill="toself",
-                        fillcolor=self.colors[h['direction']][h['stage']]['fill'],
-                        line=dict(color=self.colors[h['direction']][h['stage']]['line'], width=2),
+                        fillcolor=self.colors[p.direction][p.formed]['fill'],
+                        line=dict(color=self.colors[p.direction][p.formed]['line'], width=2),
                         text=text[2:],
                         textposition="top center"
                     )
                 )
             else:
                 # 4 point ABCD drives
-                text = [f"A {h['peak_prices'][0]:.3f} ABCD", f"B {h['peak_prices'][1]:.3f}", f"C {h['retraces']['ABC']:0.3f}", f"D {h['retraces']['BCD']:0.3f}"]
+                text = [f"A {p.y[0]:.3f} ABCD", f"B {p.y[1]:.3f}", f"C {p.retraces['ABC']:0.3f}", f"D {p.retraces['BCD']:0.3f}"]
                 self.main_plot.add_trace(
                     go.Scatter(
                         mode="lines+text",
-                        x=self.mkt_data.df.index.values[h['peak_indexes']],
-                        y=h['peak_prices'],
-                        line=dict(color=self.colors[h['direction']][h['stage']]['line'], width=4),
+                        x=self.mkt_data.df.index.values[p.idx],
+                        y=p.y,
+                        line=dict(color=self.colors[p.direction][p.formed]['line'], width=4),
                         text=text,
                         textposition="top center"
                     )
                 )
     
-    def add_head_shoulders_plots(self, head_shoulders):
+    def add_head_shoulders_plots(self, patterns):
         """
         """
-        self.title = f"{self.title}  -  {len(head_shoulders)} head&shoulders"
-        for h in head_shoulders:
-            if h['direction'] == 'bearish':
-                color = 'rgba(255, 127, 0, 0.3)' if h['stage'] == 'formed' else 'rgba(200, 0, 200, 0.3)'
+        self.title = f"{self.title}  -  {len(patterns)} head&shoulders"
+        for p in patterns:
+            if p.direction == 'bearish':
+                color = 'rgba(255, 127, 0, 0.3)' if p.formed else 'rgba(200, 0, 200, 0.3)'
             else:
-                color = 'rgba(0, 255, 0, 0.3)' if h['stage'] == 'formed' else 'rgba(200, 200, 0, 0.3)'
+                color = 'rgba(0, 255, 0, 0.3)' if p.formed else 'rgba(200, 200, 0, 0.3)'
                 
             self.main_plot.add_trace(
                 go.Scatter(
                     mode="lines+markers+text",
-                    x=self.mkt_data.df.index.values[h['peak_indexes']],
-                    y=h['peak_prices'],
+                    x=self.mkt_data.df.index.values[p.idx],
+                    y=p.y,
                     #fill="toself",
                     line=dict(color=color, width=2),
                     #text=text[0:3],
@@ -185,59 +180,34 @@ class Plotter:
                 )
             )
 
-    def add_divergence_plots(self, divergences):
-        for d in divergences:
-            color = '#ff7766' if d['direction'] == 'bearish' else 'lightgreen'
-            row = self.ROW_MAP[d['type']]
+    def add_divergence_plots(self, patterns):
+        for p in patterns:
+            color = '#ff7766' if p.direction == 'bearish' else 'lightgreen'
             self.main_plot.add_trace(
                 go.Scatter(
                     mode="lines+markers",
-                    x=self.mkt_data.df.index.values[d['peak_indexes']],
-                    y=d['peak_prices'],
+                    x=self.mkt_data.df.index.values[p.idx],
+                    y=p.y,
                     line=dict(color=color, width=2)
-                ), row=row, col=1
+                ), row=self.ROW_MAP[p.derived_from], col=1
             )
    
-    def add_peaks(self, harmonics):
+    def add_peaks(self, taobject):
         self.main_plot.add_trace(
             go.Scatter(
                     mode="markers",
-                    x=self.mkt_data.df.index.values[harmonics.peak_indexes],
-                    y=harmonics.peak_prices,
-                    line=dict(color='white', width=2)
+                    x=self.mkt_data.df.index.values[taobject.peak_indexes],
+                    y=taobject.peak_prices,
+                    line=dict(color='grey', width=2)
                 )
             )
+    
     def add_obs(self, obs_values):
-        self.plot_row += 1
         self.main_plot.add_trace(go.Scatter(x=self.mkt_data.df.index,
                                      y=obs_values,
                                  line=dict(color='orange', width=2)
-                                ), row=self.plot_row, col=1)
-        self.main_plot.update_yaxes(title_text="OBS", row=self.plot_row, col=1)
-    
-    def add_indicator_signals(self, signals):
-        for name, details in signals.items():
-            color = 'lightgreen'
-            s = details['bullish']
-            self.main_plot.add_trace(
-                go.Scatter(
-                    mode="markers",
-                    x=self.mkt_data.df.index.values[s['idx']],
-                    y=s['peak_prices'],
-                    text=f"{name}-buy",
-                    line=dict(color=color, width=2)
-                )
-            )
-            s = details['bearish']
-            color = 'rgba(255, 144, 50, 0.1)'
-            self.main_plot.add_trace(
-                go.Scatter(
-                    mode="markers",
-                    x=self.mkt_data.df.index.values[s['idx']],
-                    y=s['peak_prices'],
-                    line=dict(color=color, width=2)
-                )
-            )
+                                ), row=self.ROW_MAP['obs'], col=1)
+        self.main_plot.update_yaxes(title_text="OBS", row=self.ROW_MAP['obs'], col=1)
     
     def save_plot_image(self, location, yahoo=False):
         self.main_plot.update_layout(

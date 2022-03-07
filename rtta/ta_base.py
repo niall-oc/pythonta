@@ -7,7 +7,7 @@ Created on Tue Oct 26 11:31:37 2021
 """
 
 from scipy.signal import argrelextrema
-import numpy as np
+from db import Pattern
 
 class TABase:
     OPEN = 'open'
@@ -29,7 +29,22 @@ class TABase:
         self.lows = mkt_data.lows
         self.found = []
         self.obs_values = [0] * len(self.df)
+        self.derived_from = 'ticker'
     
+    def create_pattern(self, idx, **kwargs):
+        pattern_indexes = [self.peak_indexes[i] for i in idx]
+        return Pattern(
+            self.mkt_data.symbol, 
+            self.mkt_data.interval, 
+            self.mkt_data.source,
+            self.df.index.values[pattern_indexes],
+            [self.peak_prices[i] for i in idx],
+            self.df.index.values[pattern_indexes[-1]],
+            self.derived_from,
+            idx=pattern_indexes,
+            **kwargs
+            )
+
     def is_valid_swing(self, t1, t2, up=True):
         """
         Between time t1 and time t2 if the max and min prices are at positions 

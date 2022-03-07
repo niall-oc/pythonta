@@ -13,6 +13,8 @@ class Yahoo(MktDataBase):
     """
     General market sources
     """
+    source = 'yahoo'
+    
     def __init__(self, schema=None):
         """
         Schema is a list of dicts matching the exact column order from binance.

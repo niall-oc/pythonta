@@ -14,6 +14,7 @@ class HeadShoulders(TABase):
         """
         """
         super(HeadShoulders, self).__init__(mkt_data)
+        self.family = 'head and shoulders'
         
     
     def is_neckline_formed(self, p1, p2, p3, p4, bullish=True):
@@ -118,21 +119,12 @@ class HeadShoulders(TABase):
                                                 self.is_valid_swing(X, A, up=False):
                                                 # print(f"got here {__name__} X:{X}, A:{A}")
                                                 for O in range(X-1, -1, -1):
-                                                     if self.peak_prices[O] > self.peak_prices[X]: # Not a bull pattern
+                                                    if self.peak_prices[O] > self.peak_prices[X]: # Not a bull pattern
                                                         break # Let A become B
-                                                     elif self.peak_indexes[O] in self.lows and \
-                                                        self.is_valid_swing(O, X, up=True): # A to B must be a downward leg
-                                                        # print(f"got here {__name__} O:{O}, X:{X}")
-                                                        status = self.is_neckline_formed(O, A, C, T, bullish=False)
-                                                        if status:    
-                                                            idxes = [O, X, A, B, C, D, T]
-                                                            status.update(dict(
-                                                                direction='bearish',
-                                                                idxes = idxes,
-                                                                peak_indexes = [self.peak_indexes[n] for n in idxes],
-                                                                peak_prices = [self.peak_prices[n] for n in idxes]
-                                                            ))
-                                                            self.found.append(status)
+                                                    elif self.peak_indexes[O] in self.lows and \
+                                                        self.is_valid_swing(O, X, up=True) and \
+                                                        self.is_neckline_formed(O, A, C, T, bullish=False):  
+                                                        self.add_pattern([O, X, A, B, C, D, T], 'bearish') 
                                                         
     def bullish_scan_from(self, T):
         """
@@ -189,23 +181,23 @@ class HeadShoulders(TABase):
                                                 self.is_valid_swing(X, A, up=True):
                                                 
                                                 for O in range(X-1, -1, -1):
-                                                     if self.peak_prices[O] < self.peak_prices[X]: # Not a bull pattern
+                                                    if self.peak_prices[O] < self.peak_prices[X]: # Not a bull pattern
                                                         break # Let A become B
-                                                     elif self.peak_indexes[O] in self.highs and \
-                                                        self.is_valid_swing(O, X, up=False): # A to B must be a downward leg
-                                                        
-                                                        status = self.is_neckline_formed(O, A, C, T, bullish=True)
-                                                        if status:    
-                                                            idxes = [O, X, A, B, C, D, T]
-                                                            status.update(dict(
-                                                                direction='bullish',
-                                                                idxes = idxes,
-                                                                peak_indexes = [self.peak_indexes[n] for n in idxes],
-                                                                peak_prices = [self.peak_prices[n] for n in idxes]
-                                                            ))
-                                                            self.found.append(status)
+                                                    elif self.peak_indexes[O] in self.highs and \
+                                                        self.is_valid_swing(O, X, up=False) and \
+                                                        self.is_neckline_formed(O, A, C, T, bullish=True):    
+                                                        self.add_pattern([O, X, A, B, C, D, T], 'bullish')    
     
-        
+    def add_pattern(self, idx, direction):
+        pattern = self.create_pattern(
+            idx,
+            direction = direction,
+            formed = True,
+            family = self.family,
+            name = self.family,
+        )
+        self.found.append(pattern)
+
     def search(self, time_limit=0, formed=True, peak_spacing=6, only='all'):
         """
         Working backwards through the trend until while the D leg is still later
@@ -234,7 +226,7 @@ class HeadShoulders(TABase):
     def get_patterns(self, formed=True, only=None):
         patterns = self.found
         if formed:
-            patterns =  [p for p in patterns if p['stage'] == 'formed']
+            patterns =  [p for p in patterns if p.formed]
         if only in ('bullish', 'bearish',):
-            patterns = [p for p in patterns if p['direction'] == only]
+            patterns = [p for p in patterns if p.direction == only]
         return patterns

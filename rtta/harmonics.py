@@ -28,7 +28,7 @@ class HarmonicPatterns(TABase):
 
         """
         super(HarmonicPatterns, self).__init__(mkt_data)
-        self.PATTERNS = patterns or {
+        self.PATTERNS_FAMILIES = patterns or {
             "HARMONICS" : {
                 "crab": {
                     "XAB": {"min": 0.382, "max": 0.618},
@@ -125,17 +125,18 @@ class HarmonicPatterns(TABase):
         }
         
         # set pattern variance
-        for family, patterns in self.PATTERNS.items():
+        for family, patterns in self.PATTERNS_FAMILIES.items():
             for pattern, legs in patterns.items():
                 for leg, details in legs.items():
                     details["min"] = details["min"] * (1-variance)
                     details["max"] = details["max"] * (1+variance)
         # print(f"Variance={1-variance} - {1+variance} \n {self.PATTERNS}")
-        self.harmonics = self.PATTERNS['HARMONICS']
-        self.cyphers = self.PATTERNS['CYPHERS']
-        self.sharks = self.PATTERNS['SHARKS']
+        self.harmonics = self.PATTERNS_FAMILIES['HARMONICS']
+        self.cyphers = self.PATTERNS_FAMILIES['CYPHERS']
+        self.sharks = self.PATTERNS_FAMILIES['SHARKS']
+        self.family = 'harmonic'
     
-    def set_zone(self):
+    def set_obs(self):
         self.obs_values = [0] * len(self.df)
         # Bullish
         for pattern in self.get_patterns(formed=True):
@@ -262,19 +263,13 @@ class HarmonicPatterns(TABase):
                                             self.add_pattern(pattern, 'bullish')
                                             
     def add_pattern(self, pattern, direction):
-        pattern.update(dict(
-            direction=direction,
-            peak_indexes = [self.peak_indexes[n] for n in pattern['idx']],
-            peak_prices = [self.peak_prices[n] for n in pattern['idx']]
-        ))
-        pattern.update({
-            'pcz_price': pattern['peak_prices'][-1],
-            'target': min(pattern['peak_prices']) if direction == 'bearish' else max(pattern['peak_prices'])
-        })
+        pattern.update(
+            direction = direction,
+        )
         if direction == 'bullish':
-            self.obs_values[pattern['peak_indexes'][-1]] -= 1
+            self.obs_values[pattern.idx[-1]] -= 1
         else:
-            self.obs_values[pattern['peak_indexes'][-1]] += 1
+            self.obs_values[pattern.idx[-1]] += 1
         self.found.append(pattern)
         
     def search(self, time_limit=0, formed=True, only='all'):
@@ -285,6 +280,7 @@ class HarmonicPatterns(TABase):
         
         """
         MAX = len(self.peak_indexes)
+        self.obs_values = [0] * len(self.df)
         d_len = len(self.mkt_data.df)
         time_limit = d_len - time_limit if time_limit else time_limit
         for D in range(MAX-1, -1, -1):
@@ -301,23 +297,10 @@ class HarmonicPatterns(TABase):
         return self.get_patterns(formed=formed, only=only)
     
     def _match(self, retrace, stage, pattern_class, limit=None):
-        """
-        
-    
-        Parameters
-        ----------
-        retrace : TYPE
-            DESCRIPTION.
-        stage : TYPE
-            DESCRIPTION.
-    
-        Returns
-        -------
-        None.
-    
+        """    
         """
         fit = set()
-        for pattern, legs in self.PATTERNS[pattern_class].items():
+        for pattern, legs in self.PATTERNS_FAMILIES[pattern_class].items():
             if limit and pattern not in limit:
                 continue
                 # print(stage, 'ignore ', pattern)
@@ -343,11 +326,16 @@ class HarmonicPatterns(TABase):
         )
         fits = self._match(retraces['ABC'], 'ABC', 'ABCD')
         if fits:
-            pattern = dict(stage='forming', type=list(fits), idx=(A, B, C, D), retraces=retraces)
+            pattern = self.create_pattern(
+                (A, B, C, D),
+                family = self.family,
+                name = ', '.join(s for s in fits),
+                retraces = retraces,
+            )
             fits = self._match(retraces['BCD'], 'BCD', 'ABCD', limit=fits)
             if fits:
                 # print(status)
-                pattern.update({'stage': 'formed', 'type': list(fits)})
+                pattern.update(formed = True, name = ', '.join(s for s in fits))
         return pattern
     
     def _is_5_harmonic(self, X, A, B, C, D):
@@ -384,18 +372,23 @@ class HarmonicPatterns(TABase):
                 c_fits = fits & self._match(retraces['XCD'], 'XCD', 'CYPHERS', limit=fits)
                 s_fits = fits & self._match(retraces['XCD'], 'XCD', 'SHARKS', limit=fits)
                 fits = h_fits | c_fits | s_fits
-                pattern = dict(stage='forming', type=list(fits), idx=(X, A, B, C, D), retraces=retraces)
+                pattern = self.create_pattern(
+                    (X, A, B, C, D),
+                    family = self.family,
+                    name = ', '.join(s for s in fits),
+                    retraces = retraces
+                )
                 if fits:
                     # print(status)
-                    pattern.update({'stage': 'formed', 'type': list(fits)})
+                    pattern.update(formed = True, name = ', '.join(s for s in fits))
         
         return pattern
     
     def get_patterns(self, formed=True, only=None):
         patterns = self.found
         if formed:
-            patterns =  [p for p in patterns if p['stage'] == 'formed']
+            patterns =  [p for p in patterns if p.formed]
         if only in ('bullish', 'bearish',):
-            patterns = [p for p in patterns if p['direction'] == only]
+            patterns = [p for p in patterns if p.direction == only]
         return patterns
                         

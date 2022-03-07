@@ -15,6 +15,8 @@ class Binance(MktDataBase):
     """
     General market sources
     """
+    source = 'binance'
+    
     def __init__(self, key=None, secret=None, schema=None, time_zone='Europe/Dublin', indicator_config=None):
         """
         Binance API and Secret keys needed for lifting throttle limits or IP 
