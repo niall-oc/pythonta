@@ -6,7 +6,7 @@ Created on Fri Oct 22 11:41:20 2021
 @author: xual
 """
 
-from market_data_base import MktDataBase
+from .market_data_base import MktDataBase
 import pandas as pd
 
 class CSV(MktDataBase):

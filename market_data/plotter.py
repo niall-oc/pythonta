@@ -207,7 +207,7 @@ class Plotter:
                     mode="markers",
                     x=self.mkt_data.df.index.values[taobject.peak_indexes],
                     y=taobject.peak_prices,
-                    line=dict(color='grey', width=2)
+                    line=dict(color='lightgrey', width=2)
                 )
             )
     
