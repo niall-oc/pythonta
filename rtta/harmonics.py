@@ -272,7 +272,7 @@ class HarmonicPatterns(TABase):
             self.obs_values[pattern.idx[-1]] += 1
         self.found.append(pattern)
         
-    def search(self, time_limit=0, formed=True, only='all'):
+    def search(self, limit_to=0, formed=True, only='all'):
         """
         Working backwards through the trend until while the D leg is still later
         than the time limit. Scan for bull if D is a low or bear patterns if D
@@ -282,8 +282,8 @@ class HarmonicPatterns(TABase):
         MAX = len(self.peak_indexes)
         self.obs_values = [0] * len(self.df)
         d_len = len(self.mkt_data.df)
-        time_limit = d_len - time_limit if time_limit else time_limit
-        for D in range(MAX-1, -1, -1):
+        time_limit = d_len - limit_to if limit_to else limit_to
+        for D in range(MAX-1, 5, -1):
             # First only follow paths where D is recent enough.
             if self.peak_indexes[D] < time_limit:
                 break

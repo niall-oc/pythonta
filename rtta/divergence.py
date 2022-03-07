@@ -19,18 +19,18 @@ class Divergence(TABase):
         """
         name = False
         if lows: # Bullish divergence is on low points
-            if d['indicator'][i] > d['indicator'][i-1] and d['peak_prices'][i] < d['peak_prices'][i-1]:
+            if d['indicator'][i-1] < d['indicator'][i] and d['peak_prices'][i-1] > d['peak_prices'][i]:
                 name = "regular" # Low price strong indicator
-            elif d['indicator'][i] < d['indicator'][i-1] and d['peak_prices'][i] > d['peak_prices'][i-1]:
+            elif d['indicator'][i-1] > d['indicator'][i] and d['peak_prices'][i-1] < d['peak_prices'][i]:
                 name = "hidden" # oversold at high price
-            elif d['indicator'][i] < d['indicator'][i-1] and d['peak_prices'][i] == d['peak_prices'][i-1]:
+            elif d['indicator'][i-1] > d['indicator'][i] and d['peak_prices'][i-1] == d['peak_prices'][i]:
                 name = "exaggerated" # double bottom with bullish control on RSI
         else: # Bearish signals
-            if d['indicator'][i] > d['indicator'][i-1] and d['peak_prices'][i] < d['peak_prices'][i-1]:
+            if d['indicator'][i-1] < d['indicator'][i] and d['peak_prices'][i-1] > d['peak_prices'][i]:
                 name = "hidden" # Nearing over bought with price falling
-            elif d['indicator'][i] < d['indicator'][i-1] and d['peak_prices'][i] > d['peak_prices'][i-1]:
+            elif d['indicator'][i-1] > d['indicator'][i] and d['peak_prices'][i-1] < d['peak_prices'][i]:
                 name = "regular" # Price gaining with bearish control
-            elif d['indicator'][i] < d['indicator'][i-1] and d['peak_prices'][i] == d['peak_prices'][i-1]:
+            elif d['indicator'][i-1] > d['indicator'][i] and d['peak_prices'][i-1] == d['peak_prices'][i]:
                 name = "exaggerated" # Double top with weakinging RSI
         return name
 
@@ -51,15 +51,15 @@ class Divergence(TABase):
             formed =True,
             idx = x
         )
-    def search(self, time_limit=0, formed=True, only=None):
+    def search(self, limit_to=0, formed=True, only=None):
         self.found = []
+        d_len = len(self.mkt_data.df)
+        time_limit = d_len - limit_to if limit_to else limit_to
         for indicator, p in self.mkt_data.indicator_peaks.items():
 
             # Bullish divergences occur on lows
             lows = p['lows']
             MAX = len(lows['idx'])
-            d_len = len(self.mkt_data.df)
-            time_limit = d_len - time_limit if time_limit else time_limit
             for i in range(1, MAX):
                 if lows['idx'][i] > time_limit:
                     name = self.classify(lows, i, lows=True)
@@ -74,7 +74,6 @@ class Divergence(TABase):
             # Bearish divergences occur on peaks
             highs = p['highs']
             MAX = len(highs['idx'])
-            time_limit = MAX - time_limit if time_limit else time_limit
             for i in range(1, MAX):
                 if highs['idx'][i] > time_limit:
                     name = self.classify(highs, i, lows=False)

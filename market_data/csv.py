@@ -14,7 +14,7 @@ class CSV(MktDataBase):
     General market sources
     """
     source = 'csv'
-    
+
     def __init__(self, schema=None):
         """
         Schema is a list of dicts matching the exact column order from binance.
@@ -29,7 +29,6 @@ class CSV(MktDataBase):
             ]
         
         self.columns = [c['name'] for c in self.schema]
-        self.df = None
         
     
     def get_ticker_ohlc(self, file_path):
@@ -56,6 +55,7 @@ class CSV(MktDataBase):
 
         """
         self.df = pd.read_csv(file_path)
+        self.post_ticker_setup()
         return self.df
         
         

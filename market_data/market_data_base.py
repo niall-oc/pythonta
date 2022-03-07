@@ -26,10 +26,11 @@ class MktDataBase:
         'rsi': {'window': 14},
         'mfi': {'window': 20}
     }
-    macd=None
-    rsi=None
-    stoch_rsi=None
-    mfi=None
+    macd = None
+    rsi = None
+    stoch_rsi = None
+    mfi = None
+    source = None
 
     def __init__(self, indicator_config=None):
         self.INDICATOR_CONFIG = indicator_config or {
@@ -39,14 +40,21 @@ class MktDataBase:
             'mfi': {'window': 20}
         }
         self.obs_values = None
+        self.df = None
+        self.symbol = None
+        self.interval = None
     
+    def post_ticker_setup(self):
+        self.set_indicators()
+        self.set_peaks()
+        self.set_fib_matrix()
+
     def merge_obs(self, array):
         for i in range(len(self.obs_values)):
             self.obs_values[i] += array[i]
     
     def set_peaks(self, peak_spacing=6):
         self.obs_values = [0] * len(self.df)
-        self.set_indicators()
         self.find_price_peaks(peak_spacing=peak_spacing)
         self.indicator_peaks = {
             'macd': self.find_indicator_peaks(self.macd.macd_diff(), peak_spacing=peak_spacing),
@@ -128,24 +136,97 @@ class MktDataBase:
         list of tuples, peak_idx, peak_price
 
         """
-        self.highs = list(argrelextrema(self.df[self.HIGH].values, np.greater_equal, order=peak_spacing)[0]) 
-        self.lows = list(argrelextrema(self.df[self.LOW].values, np.less_equal, order=peak_spacing)[0])
-        idxes = sorted(
-            list(zip(self.highs, self.df[self.HIGH].values[self.highs])) +\
-            list(zip(self.lows, self.df[self.LOW].values[self.lows]))
-        )
-        peak_prices = [float(p[1]) for p in idxes]
-        peak_indexes = [int(p[0]) for p in idxes]
+
+        highs = list(argrelextrema(self.df[self.HIGH].values, np.greater_equal, order=peak_spacing)[0])
+        #Eliminate duplicates found by Argrelextrema, it is not suited to OHLC data.
+        high_prices = self.df[self.HIGH].values[highs]
+        self.peak_data = [(highs[0], high_prices[0], 2)]
+        self.highs = [highs[0]]
+        for i in range(1, len(highs)):
+            if high_prices[i] != high_prices[i-1]:
+                self.highs.append(highs[i])
+                self.peak_data.append((highs[i], high_prices[i], 1))
+
+        lows = list(argrelextrema(self.df[self.LOW].values, np.less_equal, order=peak_spacing)[0])
+        #Eliminate duplicates found by Argrelextrema, it is not suited to OHLC data.
+        low_prices = self.df[self.LOW].values[lows]
+        self.lows = [lows[0]]
+        for i in range(1, len(lows)):
+            if low_prices[i] != low_prices[i-1]:
+                self.lows.append(lows[i])
+                self.peak_data.append((lows[i], low_prices[i], 0))
         
-        # Remove duplicates that cause slower search times.
-        self.peak_prices = []; self.peak_indexes = []
-        for i in range(1, len(peak_prices)):
-            if peak_prices[i-1] != peak_prices[i]:
-                self.peak_prices.append(peak_prices[i])
-                self.peak_indexes.append(peak_indexes[i])
+        self.peak_data = sorted(self.peak_data, key=lambda x: x[0])
+        self.peak_indexes = [p[0] for p in self.peak_data]
+        self.peak_prices = [p[1] for p in self.peak_data]
+        self.peak_type = [p[2] for p in self.peak_data]
         
-        
+    def build_matrix(self):
+        """
+        """
+        MAX = len(self.peak_type)
+        matrix = [[None]*MAX for i in range(MAX)]
+        for i in range(MAX):
+            # For each peak point as a starting point.
+            if self.peak_type[i] == 1: # for a bull pattern a dip is a starting point
+                # Build from low
+                self.build_from_low(matrix, i)
+            else:
+                # Build from high
+                self.build_from_high(matrix, i)
+        return matrix
+
+    def build_from_low(self, matrix, index):
+        """
+        """
+        MAX = len(self.peak_data)
+        row = matrix[index]
+        _, start_price, _ = self.peak_data[index]
+        max_price = 0.0
+        retrace_flag = False
+        for i in range(index+1, MAX):
+            _, this_price, _ = self.peak_data[i]
+            max_price = max(max_price, this_price)
+            if not retrace_flag and this_price < start_price:
+                # We have come across a peak that has no retraces
+                return matrix
+            elif this_price == max_price:
+                # This is the new highest price
+                row[i] = 1
+            elif this_price < max_price:
+                retrace_flag = True
+                row[i] = abs((max_price-this_price)/(max_price-start_price))
+            else:
+                pass
+        return matrix
     
+    def build_from_high(self, matrix, index):
+        """
+        """
+        MAX = len(self.peak_data)
+        row = matrix[index]
+        _, start_price, _ = self.peak_data[index]
+        min_price = 10000000
+        retrace_flag = False
+        for i in range(index+1, MAX):
+            _, this_price, _ = self.peak_data[i]
+            min_price = min(min_price, this_price)
+            if not retrace_flag and this_price > start_price:
+                # We have come across a dip that has no retraces
+                return matrix
+            elif this_price == min_price:
+                # This is the new lowest price
+                row[i] = 1
+            elif this_price > min_price:
+                retrace_flag = True
+                row[i] = abs((this_price-min_price)/(start_price-min_price))
+            else:
+                pass
+        return matrix
+
+    def set_fib_matrix(self):
+        self.fib_matrix = self.build_matrix()
+
     def set_indicators(self, indicator_config=None):
         if indicator_config:
             for key, params in indicator_config.items:

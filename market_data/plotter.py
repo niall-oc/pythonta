@@ -13,11 +13,12 @@ from market_data.market_data_base import MktDataBase
 
 class Plotter:
 
-    def __init__(self, mkt_data, row_map=None, colors=None):
+    def __init__(self, mkt_data, yahoo=False, row_map=None, colors=None):
         self.mkt_data = mkt_data
         self.title = f"{self.mkt_data.symbol} {self.mkt_data.interval}"
         self.harmonics = None
         self.divergences = None
+        self.is_yahoo=yahoo
         self.ROW_MAP = row_map or {
             'macd': 3,
             'volume': 2,
@@ -49,7 +50,7 @@ class Plotter:
             }
         }
         
-    def set_main_plot(self):
+    def set_main_plot(self, yahoo=False):
         self.main_plot = make_subplots(
             rows=6, cols=1, shared_xaxes=True,
             vertical_spacing=0.01, 
@@ -109,6 +110,14 @@ class Plotter:
                                      line=dict(color='cyan', width=2)
                                     ), row=self.ROW_MAP['mfi'], col=1)
             self.main_plot.update_yaxes(title_text="MFI", row=self.ROW_MAP['mfi'], col=1)
+        if self.is_yahoo:
+            self.main_plot.update_xaxes(
+                rangebreaks=[
+                    dict(bounds=["sat", "mon"]), #hide weekends
+                    dict(values=["2015-12-25", "2016-01-01"]),  # hide Christmas and New Year's
+                    dict(bounds=[16, 9.5], pattern="hour")
+                ]
+            )
 
     def add_harmonic_plots(self, patterns):
         self.title = f"{self.title}  -  {len(patterns)} harmonics"
@@ -227,12 +236,4 @@ class Plotter:
             },
             title_font_size=38
         )
-        if yahoo:
-            self.main_plot.update_xaxes(
-                rangebreaks=[
-                    dict(bounds=["sat", "mon"]), #hide weekends
-                    dict(values=["2015-12-25", "2016-01-01"]),  # hide Christmas and New Year's
-                    dict(bounds=[16, 9.5], pattern="hour")
-                ]
-            )
         pio.write_image(self.main_plot, f"{location}", width=6*600, height=3*600, scale=1)

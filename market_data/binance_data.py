@@ -46,9 +46,6 @@ class Binance(MktDataBase):
         self.columns = [c['name'] for c in self.schema]
         self.rc = Spot(key=key, secret=secret)
         self.time_zone = time_zone
-        self.df = None
-        self.symbol = None
-        self.interval = None
     
     def _get_binance_time(self, t):
         """
@@ -132,6 +129,7 @@ class Binance(MktDataBase):
             else:
                 start_time = end_time
         self._set_df(data)
+        self.post_ticker_setup()
         return self.df
          
     
@@ -168,6 +166,7 @@ class Binance(MktDataBase):
             limit=num_ticks
         )
         self._set_df(data)
+        self.post_ticker_setup()
         return self.df
         
         

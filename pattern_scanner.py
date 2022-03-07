@@ -82,7 +82,7 @@ def scan_patterns(configuration, market, symbols):
     for symbol in symbols:
         print(f"Starting symbol {symbol}")
         # load stock ticker data.
-        time_limit = configuration['limit_to'] or 0
+        limit_to = configuration['limit_to'] or 0
         
         m.get_ticker_ohlc(symbol, configuration["interval"], **kw_args)
         m.set_peaks(peak_spacing=configuration['peak_spacing'])
@@ -91,41 +91,41 @@ def scan_patterns(configuration, market, symbols):
         patterns = deepcopy(configuration['harmonics']) # Beware of references vs copies of data
         h = HarmonicPatterns(m, variance=configuration["pattern_variance"], patterns=patterns)
         harmonic_patterns = h.search(
-            time_limit=time_limit, 
+            limit_to=limit_to, 
             formed=configuration['formed'],
             only=configuration['only']
         )
         
         d = Divergence(m)
-        divergences = d.search(time_limit=time_limit)
+        divergences = d.search(limit_to=limit_to)
         
         m.merge_obs(h.obs_values)
         m.merge_obs(d.obs_values)
         hs = HeadShoulders(m)
-        hands_patterns = hs.search(time_limit=time_limit)        
+        hands_patterns = hs.search(limit_to=limit_to)        
         
         # Find time point of newest D leg and report as forming or formed.
         
         # Plot image
-        if harmonic_patterns:
-            p = Plotter(m)
-            p.add_harmonic_plots(harmonic_patterns)
-            p.add_divergence_plots(divergences)
-            p.add_head_shoulders_plots(hands_patterns)
-            p.add_peaks(h)
-            p.add_obs(m.obs_values)
-            filename = f"{symbol}_{configuration['interval']}.png"
-            image_path = os.path.join(configuration['output_path'], filename)
-            p.save_plot_image(image_path)
+        #if harmonic_patterns:
+        p = Plotter(m, yahoo=market.lower() == "yahoo")
+        p.add_harmonic_plots(harmonic_patterns)
+        p.add_divergence_plots(divergences)
+        p.add_head_shoulders_plots(hands_patterns)
+        p.add_peaks(h)
+        p.add_obs(m.obs_values)
+        filename = f"{symbol}_{configuration['interval']}.png"
+        image_path = os.path.join(configuration['output_path'], filename)
+        p.save_plot_image(image_path)
                 
         time.sleep(configuration['sleep_time'])
 
 if __name__ == '__main__':
     start_time = datetime.datetime.now()
     # Runtime
-    configuration = handle_args()
+    # configuration = handle_args()
     # VS CODE debugging!! :-|
-    # configuration = debug_args("debug_settings.yaml")
+    configuration = debug_args("debug_settings.yaml")
     for market, symbols in configuration['markets'].items():
         scan_patterns(configuration, market, symbols)
     print(datetime.datetime.now() - start_time)

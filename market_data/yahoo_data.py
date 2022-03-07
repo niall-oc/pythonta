@@ -14,7 +14,7 @@ class Yahoo(MktDataBase):
     General market sources
     """
     source = 'yahoo'
-    
+
     def __init__(self, schema=None):
         """
         Schema is a list of dicts matching the exact column order from binance.
@@ -30,11 +30,7 @@ class Yahoo(MktDataBase):
                 {"name": "stock_splits", "type":"int"}
             ]
         
-        self.columns = [c['name'] for c in self.schema]
-        self.df = None
-        self.symbol = None
-        self.interval = None
-        
+        self.columns = [c['name'] for c in self.schema]        
     
     def get_ticker_ohlc(self, symbol, interval, start_time=None, end_time=None, period='30d'):
         """
@@ -65,6 +61,7 @@ class Yahoo(MktDataBase):
         self.df = self.df.rename(columns=rename_columns)
         self.symbol = symbol
         self.interval = interval
+        self.post_ticker_setup()
         return self.df
         
         

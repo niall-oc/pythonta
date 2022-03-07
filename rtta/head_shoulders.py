@@ -198,7 +198,7 @@ class HeadShoulders(TABase):
         )
         self.found.append(pattern)
 
-    def search(self, time_limit=0, formed=True, peak_spacing=6, only='all'):
+    def search(self, limit_to=0, formed=True, peak_spacing=6, only='all'):
         """
         Working backwards through the trend until while the D leg is still later
         than the time limit. Scan for bull if D is a low or bear patterns if D
@@ -207,7 +207,7 @@ class HeadShoulders(TABase):
         """
         MAX = len(self.peak_indexes)
         d_len = len(self.mkt_data.df)
-        time_limit = d_len - time_limit if time_limit else time_limit
+        time_limit = d_len - limit_to if limit_to else limit_to
         for T in range(MAX-1, -1, -1):
             # First only follow paths where D is recent enough.
             if self.peak_indexes[T] < time_limit:
