@@ -61,7 +61,6 @@ class Yahoo(MktDataBase):
         self.df = self.df.rename(columns=rename_columns)
         self.symbol = symbol
         self.interval = interval
-        self.post_ticker_setup()
         return self.df
         
         

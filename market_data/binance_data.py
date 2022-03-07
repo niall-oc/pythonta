@@ -129,11 +129,10 @@ class Binance(MktDataBase):
             else:
                 start_time = end_time
         self._set_df(data)
-        self.post_ticker_setup()
         return self.df
          
     
-    def get_ticker_ohlc(self, symbol, interval, start_time=None, end_time=None, num_ticks=200):
+    def get_ticker_ohlc(self, symbol, interval, start_time=None, end_time=None, num_ticks=1000):
         """
         Requires an api endpoint to source the ticker data from.  Requires any
         API keys or credentials to be setup before hand.

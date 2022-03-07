@@ -55,7 +55,6 @@ class CSV(MktDataBase):
 
         """
         self.df = pd.read_csv(file_path)
-        self.post_ticker_setup()
         return self.df
         
         

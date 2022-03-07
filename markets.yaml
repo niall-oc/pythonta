@@ -48,7 +48,6 @@ yahoo:
     - DDAIF
     - LMT
     # COMMODITIES
-    - NQCIWER
     - OVX
     - XOI
     - PBBSF
@@ -70,7 +69,6 @@ yahoo:
     - GS
     - BCS
     - DB
-    - BANKNIFTY
     - SQCF
     - CS
     - COF
@@ -81,3 +79,21 @@ yahoo:
     - GOLD
     - CENX
     - SCCO
+    # TECHNOLOGY
+    - MSFT
+    - AMZN
+    - AAPL
+    - FB
+    - GOOG
+    - AMD
+    - SQ.NYSE
+    - NVDA
+    - XRX
+    - LNVGY
+    - ERIC
+    - PYPL
+    - ORCL
+    - HPQ
+    - DIS
+    - NFLX
+    - IBM

@@ -37,7 +37,10 @@ def handle_args():
     configuration  = yaml.load(open(args.config, "r"), Loader=yaml.FullLoader)
     
     if args.symbol:
-        configuration['symbols'] = [args.symbol]
+        market, symbol = args.symbol.split(':')
+        configuration['markets'] = {market: [symbol]}
+    else:
+        configuration['markets'] = yaml.load(open(configuration['markets'], "r"), Loader=yaml.FullLoader)
     if args.interval:
         configuration['interval'] = args.interval
     if args.formed:
@@ -56,8 +59,7 @@ def handle_args():
         configuration['pattern_variance'] = float(args.pattern_variance)
     if args.peak_spacing:
         configuration['peak_spacing'] = int(args.peak_spacing)
-    
-    configuration['markets'] = yaml.load(open(configuration['markets'], "r"), Loader=yaml.FullLoader)
+
     if configuration['harmonics']:
         configuration['harmonics'] = yaml.load(open(configuration['harmonics'], "r"), Loader=yaml.FullLoader)
     return configuration
@@ -85,7 +87,11 @@ def scan_patterns(configuration, market, symbols):
         limit_to = configuration['limit_to'] or 0
         
         m.get_ticker_ohlc(symbol, configuration["interval"], **kw_args)
-        m.set_peaks(peak_spacing=configuration['peak_spacing'])
+
+        if not len(m.df):
+            continue # No data no go
+        
+        m.post_ticker_setup(peak_spacing=configuration['peak_spacing']) 
 
         # scan for harmonics and divergences.
         patterns = deepcopy(configuration['harmonics']) # Beware of references vs copies of data
@@ -123,9 +129,9 @@ def scan_patterns(configuration, market, symbols):
 if __name__ == '__main__':
     start_time = datetime.datetime.now()
     # Runtime
-    # configuration = handle_args()
+    configuration = handle_args()
     # VS CODE debugging!! :-|
-    configuration = debug_args("debug_settings.yaml")
+    # configuration = debug_args("debug_settings.yaml")
     for market, symbols in configuration['markets'].items():
         scan_patterns(configuration, market, symbols)
     print(datetime.datetime.now() - start_time)

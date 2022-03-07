@@ -47,7 +47,7 @@ only: all
 
 # This is the percentage that harmonic patterns can vary by. or 1.5% variance a shark pattern that would retrace at 1.13 of the XA leg can go 1.5 percent further.
 # Increasing this captures more patterns but they may be less reliable. Override on the command line using --pattern_variance 0.05
-pattern_variance: 0.015
+pattern_variance: 0.03
 
 # Increasing this number means the peak sensitivity is reduced. Ie. there is more space between peaks. This increases performance but may miss patterns.
 # Override on the command line using --peak_spacing 12

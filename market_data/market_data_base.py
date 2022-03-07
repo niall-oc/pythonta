@@ -44,10 +44,11 @@ class MktDataBase:
         self.symbol = None
         self.interval = None
     
-    def post_ticker_setup(self):
-        self.set_indicators()
-        self.set_peaks()
-        self.set_fib_matrix()
+    def post_ticker_setup(self, peak_spacing=6):
+        if len(self.df):
+            self.set_indicators()
+            self.set_peaks(peak_spacing=peak_spacing)
+            # self.set_fib_matrix()
 
     def merge_obs(self, array):
         for i in range(len(self.obs_values)):
