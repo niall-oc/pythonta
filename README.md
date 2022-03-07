@@ -62,11 +62,11 @@ Using the command promt on windows or the shell on linux.
 [Twitter bot](http://twitter.com/ZechsMarquie) is my twitter account which my bot posts to. Going forward I'm going to make this a daily thing with top crypto and stonks!
 
 # Future thangs!
-Patch this code base
+Added
 - [x] Patch - Remove Duplicate peaks created by argrelextrema so search is faster.
 - [x] Improve - Config better laid out in yaml.  Harmonic retracements can be edited in yaml configs.
+- [x] Add hooks for storing patterns in mongodb for historical analysis.
 
-New code base
+Todo
 - [ ] Test first!  The new code base is test driven so that more can participate.
-- [ ] Add hooks for storing patterns in mongodb for historical analysis.
 - [ ] Add webserver for locally running UI
