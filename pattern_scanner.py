@@ -107,16 +107,16 @@ def scan_patterns(configuration, market, symbols):
         # Find time point of newest D leg and report as forming or formed.
         
         # Plot image
-        #if harmonic_patterns:
-        p = Plotter(m, yahoo=market.lower() == "yahoo")
-        p.add_harmonic_plots(harmonic_patterns)
-        p.add_divergence_plots(divergences)
-        p.add_head_shoulders_plots(hands_patterns)
-        p.add_peaks(h)
-        p.add_obs(m.obs_values)
-        filename = f"{symbol}_{configuration['interval']}.png"
-        image_path = os.path.join(configuration['output_path'], filename)
-        p.save_plot_image(image_path)
+        if harmonic_patterns:
+            p = Plotter(m, yahoo=market.lower() == "yahoo")
+            p.add_harmonic_plots(harmonic_patterns)
+            p.add_divergence_plots(divergences)
+            p.add_head_shoulders_plots(hands_patterns)
+            p.add_peaks(h)
+            p.add_obs(m.obs_values)
+            filename = f"{symbol}_{configuration['interval']}.png"
+            image_path = os.path.join(configuration['output_path'], filename)
+            p.save_plot_image(image_path)
                 
         time.sleep(configuration['sleep_time'])
 
