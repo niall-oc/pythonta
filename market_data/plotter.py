@@ -110,14 +110,6 @@ class Plotter:
                                      line=dict(color='cyan', width=2)
                                     ), row=self.ROW_MAP['mfi'], col=1)
             self.main_plot.update_yaxes(title_text="MFI", row=self.ROW_MAP['mfi'], col=1)
-        if self.is_yahoo:
-            self.main_plot.update_xaxes(
-                rangebreaks=[
-                    dict(bounds=["sat", "mon"]), #hide weekends
-                    dict(values=["2015-12-25", "2016-01-01"]),  # hide Christmas and New Year's
-                    dict(bounds=[16, 9.5], pattern="hour")
-                ]
-            )
 
     def add_harmonic_plots(self, patterns):
         self.title = f"{self.title}  -  {len(patterns)} harmonics"
@@ -218,7 +210,7 @@ class Plotter:
                                 ), row=self.ROW_MAP['obs'], col=1)
         self.main_plot.update_yaxes(title_text="OBS", row=self.ROW_MAP['obs'], col=1)
     
-    def save_plot_image(self, location, yahoo=False):
+    def save_plot_image(self, location):
         self.main_plot.update_layout(
             xaxis_rangeslider_visible=False,
             template='plotly_dark',
@@ -235,5 +227,5 @@ class Plotter:
                 'yanchor': 'top',
             },
             title_font_size=38
-        )
+        )   
         pio.write_image(self.main_plot, f"{location}", width=6*600, height=3*600, scale=1)

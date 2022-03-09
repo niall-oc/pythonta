@@ -114,7 +114,7 @@ def scan_patterns(configuration, market, symbols):
         
         # Plot image
         if harmonic_patterns:
-            p = Plotter(m, yahoo=market.lower() == "yahoo")
+            p = Plotter(m, yahoo=bool(market.lower() == "yahoo"))
             p.add_harmonic_plots(harmonic_patterns)
             p.add_divergence_plots(divergences)
             p.add_head_shoulders_plots(hands_patterns)

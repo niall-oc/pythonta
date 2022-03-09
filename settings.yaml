@@ -67,13 +67,13 @@ peak_spacing: 8
 # The interval or time horizon your candles represent. Options are on yahoo are 15m, 1h, 2h, 4h, 1d, 1w, 1m
 # Override on the command line using --interval 1d 
 # Yahoo only supports [1m, 2m, 5m, 15m, 30m, 60m, 90m, 1h, 1d, 5d, 1wk, 1mo, 3mo] NO 4h
-interval: 1h
+interval: 1d
 
 # Biance can return up to 1000 candles for a given interval.  I may wrap this in a new variable in a future release. For now 1000 is the limit
-num_ticks: 1000
+num_ticks: 300
 
 # Yahoo uses specific period strings ( not candle ticks like binance ).  I may wrap this in a new variable in a future release. For now 1d 20d 400d is advised.
-period: 30d
+period: 300d
 
 # Time to sleep between api calls.  I recommend no less than .3 of a second.  This stops the api end point from throttling your requests.
 sleep_time: 0.3
