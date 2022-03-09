@@ -271,13 +271,13 @@ class HarmonicPatterns(TABase):
         else:
             self.obs_values[pattern.idx[-1]] += 1
         self.found.append(pattern)
+
         
     def search(self, limit_to=0, formed=True, only='all'):
         """
         Working backwards through the trend until while the D leg is still later
         than the time limit. Scan for bull if D is a low or bear patterns if D
         is a high.
-        
         """
         MAX = len(self.peak_indexes)
         self.obs_values = [0] * len(self.df)
@@ -392,3 +392,7 @@ class HarmonicPatterns(TABase):
             patterns = [p for p in patterns if p.direction == only]
         return patterns
                         
+    def matrix_search(self, limit_to=0, formed=True, only='all'):
+        """
+        """
+        

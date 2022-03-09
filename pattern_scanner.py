@@ -39,6 +39,8 @@ def handle_args():
     if args.symbol:
         market, symbol = args.symbol.split(':')
         configuration['markets'] = {market: [symbol]}
+    elif args.markets:
+        configuration['markets'] = yaml.load(open(args.markets, "r"), Loader=yaml.FullLoader)
     else:
         configuration['markets'] = yaml.load(open(configuration['markets'], "r"), Loader=yaml.FullLoader)
     if args.interval:
@@ -51,8 +53,6 @@ def handle_args():
         configuration['only'] = args.only
     if args.output_path:
         configuration['output_path'] = args.output_path
-    if args.markets:
-        configuration['markets'] = args.markets
     if args.harmonics:
         configuration['harmonics'] = args.harmonics
     if args.pattern_variance:
