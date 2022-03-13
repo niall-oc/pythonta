@@ -304,7 +304,9 @@ class HarmonicPatterns(TABase):
             if limit and pattern not in limit:
                 continue
                 # print(stage, 'ignore ', pattern)
-            elif legs[stage]['min'] <= retrace and retrace <= legs[stage]['max']:
+            elif legs[stage]['min'] <= retrace and retrace <= legs[stage]['max']: #('D' in stage or retrace <= legs[stage]['max']):
+                # checking if the retrace is a D leg allows pattern completion 
+                # to hit within the candle but not be limited to the peak
                 fit.add(pattern)
         return fit
     

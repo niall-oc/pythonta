@@ -7,7 +7,10 @@ Created on Wed Dec 22 21:26:17 2021
 """
 import pandas as pd
 
-class Pattern:  
+class Pattern:
+    BEARISH = 'bearish'
+    BULLISH = 'bullish'
+
     def __init__(self, symbol, interval, source, epoch_idx, y, time, derived_from, direction=None, family=None, name=None ,idx=None, formed=False, retraces=None, confirmation=None):
         """
         This class enforces that a pattern always has these attributes.  
@@ -27,6 +30,21 @@ class Pattern:
         self.derived_from = derived_from
         self.retraces = retraces
         self.confirmation = confirmation
+        self._set_completion_prices()
+    
+    def _set_completion_prices(self):
+        if self.direction == self.BULLISH:
+            X = self.y[0]
+            peak = max(self.y)
+            height = peak - X
+            self.completion_prices = {
+                0.886 : peak - (height * .886),
+                0.786 : peak - (height * .786),
+                1.13 : peak - (height * 1.13),
+                1.27 : peak - (height * 1.27),
+                1.414: peak - (height * 1.14),
+                1.618: peak - (height * 1.618)
+            }
 
     def save(self, collection):
         collection.insert_one(self.to_dict())

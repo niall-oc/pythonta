@@ -33,7 +33,7 @@ class TABase:
     
     def create_pattern(self, idx, **kwargs):
         pattern_indexes = [self.peak_indexes[i] for i in idx]
-        return Pattern(
+        p = Pattern(
             self.mkt_data.symbol, 
             self.mkt_data.interval, 
             self.mkt_data.source,
@@ -43,7 +43,8 @@ class TABase:
             self.derived_from,
             idx=pattern_indexes,
             **kwargs
-            )
+        )
+        return p
 
     def is_valid_swing(self, t1, t2, up=True):
         """
