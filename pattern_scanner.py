@@ -18,6 +18,10 @@ from market_data.binance_data import Binance
 from market_data.yahoo_data import Yahoo
 from market_data.plotter import Plotter
 from copy import deepcopy
+import logging
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 def handle_args():
     parser = argparse.ArgumentParser()
@@ -82,7 +86,7 @@ def scan_patterns(configuration, market, symbols):
         raise ValueError(f"Markets currently supported are binance or yahoo. You did not use one of these!")
     m = mkt()
     for symbol in symbols:
-        print(f"Starting symbol {symbol}")
+        logger.info(f"Starting symbol {symbol}")
         # load stock ticker data.
         limit_to = configuration['limit_to'] or 0
         
@@ -114,6 +118,7 @@ def scan_patterns(configuration, market, symbols):
         
         # Plot image
         if harmonic_patterns:
+            logger.info(str(harmonic_patterns[-1]))
             p = Plotter(m, yahoo=bool(market.lower() == "yahoo"))
             p.add_harmonic_plots(harmonic_patterns)
             p.add_divergence_plots(divergences)
@@ -123,7 +128,7 @@ def scan_patterns(configuration, market, symbols):
             filename = f"{symbol}_{configuration['interval']}.png"
             image_path = os.path.join(configuration['output_path'], filename)
             p.save_plot_image(image_path)
-            print(f"saved {image_path}")
+            logger.info(f"saved {image_path}")
                 
         time.sleep(configuration['sleep_time'])
 
