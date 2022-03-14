@@ -26,7 +26,10 @@ harmonics: harmonics.yaml
 #harmonics: false 
                                                                                               
 # The path where your trend images will be saved.  Override on the command line using --output_path /home/your/preferred/output/folder
-output_path: /home/xual/Pictures/patterns                                                                                                
+output_path: /home/xual/Pictures/patterns
+
+# Python logging.  levels are DEBUG, INFO, WARNING, ERROR, CRITICAL
+log_level: INFO
                                                                                                    
 # ___                            __                         
 #  |  ._ _|_  _  ._ ._   _. |   (_   _ _|_ _|_ o ._   _   _ 

@@ -5,23 +5,28 @@ Created on Mon Nov 15 16:14:00 2021
 
 @author: xual
 """
-
-import argparse
-import os
-import yaml
-import datetime
-import time
 from rtta.harmonics import HarmonicPatterns
 from rtta.head_shoulders import HeadShoulders
 from rtta.divergence import Divergence
 from market_data.binance_data import Binance
 from market_data.yahoo_data import Yahoo
 from market_data.plotter import Plotter
+import argparse
+import os
+import yaml
+import datetime
+import time
+import sys
 from copy import deepcopy
 import logging
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
+
+handler = logging.StreamHandler(sys.stdout)
+formatter = logging.Formatter('%(asctime)s - %(filename)s - %(lineno)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
 def handle_args():
     parser = argparse.ArgumentParser()
@@ -36,6 +41,7 @@ def handle_args():
     parser.add_argument("--harmonics", help="To use a specific set of retrace values for harmonics contained in a yaml file. Families include Sharks, cyphers, harmonics and ABCDs")
     parser.add_argument("--pattern_variance", help="The percentage of variance applied to harmonic patterns. eg. 0.03 adds 3% either side of a 1.618 retrace")
     parser.add_argument("--peak_spacing", help="Peak finding sensitivity.  The lower the number the more peaks are found. This can increase the search time and add too much noise")
+    parser.add_argument("--log_level", help="Override the log_level in settings.yaml")
     
     args = parser.parse_args()
     configuration  = yaml.load(open(args.config, "r"), Loader=yaml.FullLoader)
@@ -63,6 +69,9 @@ def handle_args():
         configuration['pattern_variance'] = float(args.pattern_variance)
     if args.peak_spacing:
         configuration['peak_spacing'] = int(args.peak_spacing)
+    if args.log_level:
+        logger.info(f"flag log level is set to {args.log_level}")
+        configuration['log_level'] = args.log_level
 
     if configuration['harmonics']:
         configuration['harmonics'] = yaml.load(open(configuration['harmonics'], "r"), Loader=yaml.FullLoader)
@@ -118,7 +127,7 @@ def scan_patterns(configuration, market, symbols):
         
         # Plot image
         if harmonic_patterns:
-            logger.info(str(harmonic_patterns[-1]))
+            logger.debug(str(harmonic_patterns[-1]))
             p = Plotter(m, yahoo=bool(market.lower() == "yahoo"))
             p.add_harmonic_plots(harmonic_patterns)
             p.add_divergence_plots(divergences)
@@ -138,6 +147,11 @@ if __name__ == '__main__':
     configuration = handle_args()
     # VS CODE debugging!! :-|
     # configuration = debug_args("debug_settings.yaml")
+
+    # Logging preferences
+    handler.setLevel(getattr(logging, configuration['log_level']))
+    logger.setLevel(handler.level)
+
     for market, symbols in configuration['markets'].items():
         scan_patterns(configuration, market, symbols)
     print(datetime.datetime.now() - start_time)
