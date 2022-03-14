@@ -33,7 +33,7 @@ python3 -m virtualenv venv
 source venv/bin/activate
 ```
 
-Install all project dependencies
+Install all project dependencies.
 
 ```pip3 install -r requirements.txt```
 
