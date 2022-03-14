@@ -101,7 +101,7 @@ def scan_patterns(configuration, market, symbols):
             formed=configuration['formed'],
             only=configuration['only']
         )
-        print(harmonic_patterns)
+        # print(harmonic_patterns)
         d = Divergence(m)
         divergences = d.search(limit_to=limit_to)
         
