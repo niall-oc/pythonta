@@ -54,6 +54,12 @@ class HarmonicPatterns(TABase):
                     "BCD": {"min": 1.618, "max": 2.618},
                     "XAD": {"min": 0.886, "max": 0.886}
                 },
+                "alternate-bat": {
+                    "XAB": {"min": 0.382, "max": 0.382},
+                    "ABC": {"min": 0.382, "max": 0.886},
+                    "BCD": {"min": 2.0, "max": 3.618},
+                    "XAD": {"min": 1.13, "max": 1.13}
+                },
                 "gartley": {
                     "XAB": {"min": 0.618, "max": 0.618},
                     "ABC": {"min": 0.382, "max": 0.886},
@@ -82,14 +88,14 @@ class HarmonicPatterns(TABase):
                     "ABC": {"min": 1.13, "max": 1.13},
                     "XAD": {"min": 0.886, "max": 0.886},
                     "XCD": {"min": 0.886, "max": 0.886},
-                    "BCD": {"min": 1.618, "max": 2.227},
+                    "BCD": {"min": 1.618, "max": 2.24},
                 },
                 "shark-deep": {
                     "XAB": {"min": 0.386, "max": 0.618},
                     "ABC": {"min": 1.618, "max": 1.618},
                     "XAD": {"min": 1.13, "max": 1.13},
                     "XCD": {"min": 1.13, "max": 1.13},
-                    "BCD": {"min": 1.618, "max": 2.227},
+                    "BCD": {"min": 1.618, "max": 2.24},
                 }
             },
             "ABCD":{
@@ -171,7 +177,7 @@ class HarmonicPatterns(TABase):
                         
                 for B in range(C-1, -1, -1):
             
-                    if self.peak_prices[B] > self.peak_prices[C]:
+                    if self.peak_prices[B] < self.peak_prices[D] and self.peak_prices[B] > self.peak_prices[C]:
                         # B must be lower than C
                         break # let C become B
                     elif self.peak_indexes[B] in self.lows and \
@@ -230,7 +236,7 @@ class HarmonicPatterns(TABase):
                         
                 for B in range(C-1, -1, -1):
             
-                    if self.peak_prices[B] < self.peak_prices[C]:
+                    if self.peak_prices[B] > self.peak_prices[D] and self.peak_prices[B] < self.peak_prices[C]:
                         break # let C become B
                     elif self.peak_indexes[B] in self.highs and \
                         self.is_valid_swing(B, C, up=False): # B to C must be an downward leg

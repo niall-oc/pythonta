@@ -101,7 +101,7 @@ def scan_patterns(configuration, market, symbols):
             formed=configuration['formed'],
             only=configuration['only']
         )
-        
+        print(harmonic_patterns)
         d = Divergence(m)
         divergences = d.search(limit_to=limit_to)
         
@@ -123,6 +123,7 @@ def scan_patterns(configuration, market, symbols):
             filename = f"{symbol}_{configuration['interval']}.png"
             image_path = os.path.join(configuration['output_path'], filename)
             p.save_plot_image(image_path)
+            print(f"saved {image_path}")
                 
         time.sleep(configuration['sleep_time'])
 

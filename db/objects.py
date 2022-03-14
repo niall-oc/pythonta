@@ -30,10 +30,25 @@ class Pattern:
         self.derived_from = derived_from
         self.retraces = retraces
         self.confirmation = confirmation
+        self.completion_prices = None
         self._set_completion_prices()
     
     def _set_completion_prices(self):
         if self.direction == self.BULLISH:
+            X = self.y[0]
+            peak = max(self.y)
+            height = peak - X
+            self.completion_prices = {
+                0.886 : peak - (height * .886),
+                0.786 : peak - (height * .786),
+                1.13 : peak - (height * 1.13),
+                1.27 : peak - (height * 1.27),
+                1.414: peak - (height * 1.14),
+                1.618: peak - (height * 1.618)
+            }
+    
+    def _set_completion_prices(self):
+        if self.direction == self.BEARISH:
             X = self.y[0]
             peak = max(self.y)
             height = peak - X
@@ -68,7 +83,8 @@ class Pattern:
             formed = self.formed,
             derived_from = self.derived_from,
             retraces = self.retraces,
-            confirmation = self.confirmation
+            confirmation = self.confirmation,
+            completion_prices = self.completion_prices
         )
 
     def to_dict(self):
@@ -86,7 +102,8 @@ class Pattern:
             formed = self.formed,
             derived_from = self.derived_from,
             retraces = self.retraces,
-            confirmation = self.confirmation
+            confirmation = self.confirmation,
+            completion_prices = self.completion_prices
         )
     
     def __str__(self):
