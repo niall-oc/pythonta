@@ -35,3 +35,4 @@ typing-extensions==4.1.1
 urllib3==1.26.8
 yfinance==0.1.70
 zope.interface==5.4.0
+finviz==1.4.3

@@ -56,7 +56,9 @@ Using the command promt on windows or the shell on linux.
 4. scan AAPL for patterns that completed in the last week. ```python3 pattern_scanner.py yahoo_scanner.yaml --interval 1d --limit_to 7```
 5. scan BTCUSDT for patterns that are forming right now. ```python3 pattern_scanner.py binance_scanner.yaml --interval 15m --limit_to 5```
 
-
+### Finviz Pre-Scanner
+1. Create a market config file from a configured finviz search. ```python3 finviz_search.py finviz_config.yaml```
+2. Create a specified market config file from a specific finviz search. ```python3 finviz_search.py finviz_config.yaml --output_yaml my_finviz_market.yaml --filter_query cap_largeover,earningsdate_nextdays5,ind_stocksonly,sh_avgvol_o1000,sh_opt_option,sh_price_o,geo_usa```
 
 ## Bot posts scans to twitter
 [Twitter bot](http://twitter.com/ZechsMarquie) is my twitter account which my bot posts to. Going forward I'm going to make this a daily thing with top crypto and stonks!
