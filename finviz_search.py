@@ -1,23 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Mon Nov 15 16:14:00 2021
-
-@author: xual
-"""
-from rtta.harmonics import HarmonicPatterns
-from rtta.head_shoulders import HeadShoulders
-from rtta.divergence import Divergence
-from market_data.binance_data import Binance
-from market_data.yahoo_data import Yahoo
-from market_data.plotter import Plotter
 import argparse
-import os
 import yaml
 import datetime
-import time
 import sys
-from copy import deepcopy
 import logging
 
 from finviz.screener import Screener
@@ -76,12 +62,8 @@ def finviz_populate(configuration):
 
 if __name__ == '__main__':
     start_time = datetime.datetime.now()
-    # Runtime
     configuration = handle_args()
-    # VS CODE debugging!! :-|
-    # configuration = debug_args("debug_settings.yaml")
 
-    # Logging preferences
     handler.setLevel(getattr(logging, configuration.get('log_level', "INFO")))
     logger.setLevel(handler.level)
 
