@@ -18,7 +18,7 @@
 
 # Full file path to markets.  See markets.yaml for description of markets config file.
 # You can override this on the command line using --markets /path/to/alternative.yaml
-markets: markets.yaml
+markets: debug_markets.yaml
 
 # Full Path to Harmonics file. See harmonics.yaml for a description of the harmonics config file
 # You can override this on the command line using --markets /path/to/alternative.yaml
@@ -42,7 +42,7 @@ formed: true
 
 # This limits the search to patterns that completed in the last n candles.  In this case 400. If you only want to see recently occuring actionable patterns I suggest using 10 or less.
 # The lower the number the faster the search.  Override on the command line using --limit_to 10
-limit_to: 0
+limit_to: 10
 
 # This switch limits the search to bullish, bearish or all trend directions. Override on the command line using --only bullish
 only: all
@@ -53,7 +53,7 @@ pattern_variance: 0.03
 
 # Increasing this number means the peak sensitivity is reduced. Ie. there is more space between peaks. This increases performance but may miss patterns.
 # Override on the command line using --peak_spacing 12
-peak_spacing: 8
+peak_spacing: 6
                                          
 # | \  _. _|_  _.    _  _      ._ _ o ._   _  
 # |_/ (_|  |_ (_|   _> (_) |_| | (_ | | | (_| 
@@ -74,7 +74,7 @@ interval: 1h
 num_ticks: 1000
 
 # Yahoo uses specific period strings ( not candle ticks like binance ).  I may wrap this in a new variable in a future release. For now 1d 20d 400d is advised.
-period: 30d
+period: 50d
 
 # Time to sleep between api calls.  I recommend no less than .3 of a second.  This stops the api end point from throttling your requests.
 sleep_time: 0.3
