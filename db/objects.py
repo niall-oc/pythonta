@@ -10,6 +10,7 @@ import pandas as pd
 class Pattern:
     BEARISH = 'bearish'
     BULLISH = 'bullish'
+    FIB_TARGETS = [0.382, 0.5, 0.618, 0.786, 0.886, 1.0, 1.13, 1.618, 2.618, 3.618]
 
     def __init__(self, symbol, interval, source, epoch_idx, y, time, derived_from, direction=None, family=None, name=None ,idx=None, formed=False, retraces=None, confirmation=None):
         """
@@ -30,36 +31,27 @@ class Pattern:
         self.derived_from = derived_from
         self.retraces = retraces
         self.confirmation = confirmation
-        self.completion_prices = None
-        self._set_completion_prices()
-    
-    def _set_completion_prices(self):
+        self.target_prices = None
+        if self.formed:
+            self._set_target_prices()
+
+    def _set_target_prices(self):
+        """
+        Prices set from the CD leg
+        """
+        C, D = self.y[-2], self.y[-1]
+        height = abs(C - D)
         if self.direction == self.BULLISH:
-            X = self.y[0]
-            peak = max(self.y)
-            height = peak - X
-            self.completion_prices = {
-                0.886 : peak - (height * .886),
-                0.786 : peak - (height * .786),
-                1.13 : peak - (height * 1.13),
-                1.27 : peak - (height * 1.27),
-                1.414: peak - (height * 1.14),
-                1.618: peak - (height * 1.618)
+            self.target_prices = {
+                t: D + (height*t)
+                for t in self.FIB_TARGETS
             }
-    
-    def _set_completion_prices(self):
-        if self.direction == self.BEARISH:
-            X = self.y[0]
-            peak = max(self.y)
-            height = peak - X
-            self.completion_prices = {
-                0.886 : peak - (height * .886),
-                0.786 : peak - (height * .786),
-                1.13 : peak - (height * 1.13),
-                1.27 : peak - (height * 1.27),
-                1.414: peak - (height * 1.14),
-                1.618: peak - (height * 1.618)
+        else:
+            self.target_prices = {
+                t: D - (height*t)
+                for t in self.FIB_TARGETS
             }
+
 
     def save(self, collection):
         collection.insert_one(self.to_dict())
@@ -84,7 +76,7 @@ class Pattern:
             derived_from = self.derived_from,
             retraces = self.retraces,
             confirmation = self.confirmation,
-            completion_prices = self.completion_prices
+            target_prices = self.target_prices
         )
 
     def to_dict(self):
@@ -103,7 +95,7 @@ class Pattern:
             derived_from = self.derived_from,
             retraces = self.retraces,
             confirmation = self.confirmation,
-            completion_prices = self.completion_prices
+            target_prices = self.target_prices
         )
     
     def __str__(self):

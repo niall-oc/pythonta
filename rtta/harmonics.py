@@ -33,6 +33,12 @@ class HarmonicPatterns(TABase):
                 "crab": {
                     "XAB": {"min": 0.382, "max": 0.618},
                     "ABC": {"min": 0.382, "max": 0.886},
+                    "BCD": {"min": 2.618, "max": 3.618},
+                    "XAD": {"min": 1.618, "max": 1.618}
+                },
+                "crab-deep": {
+                    "XAB": {"min": 0.886, "max": 0.886},
+                    "ABC": {"min": 0.382, "max": 0.886},
                     "BCD": {"min": 2.227, "max": 3.618},
                     "XAD": {"min": 1.618, "max": 1.618}
                 },
@@ -54,7 +60,7 @@ class HarmonicPatterns(TABase):
                     "BCD": {"min": 1.618, "max": 2.618},
                     "XAD": {"min": 0.886, "max": 0.886}
                 },
-                "alternate-bat": {
+                "bat-alternate": {
                     "XAB": {"min": 0.382, "max": 0.382},
                     "ABC": {"min": 0.382, "max": 0.886},
                     "BCD": {"min": 2.0, "max": 3.618},
@@ -307,10 +313,8 @@ class HarmonicPatterns(TABase):
         """
         fit = set()
         for pattern, legs in self.PATTERNS_FAMILIES[pattern_class].items():
-            if limit and pattern not in limit:
-                continue
-                # print(stage, 'ignore ', pattern)
-            elif legs[stage]['min'] <= retrace and retrace <= legs[stage]['max']: #('D' in stage or retrace <= legs[stage]['max']):
+            if (limit is None or pattern in limit) and \
+            legs[stage]['min'] <= retrace and retrace <= legs[stage]['max']: #('D' in stage or retrace <= legs[stage]['max']):
                 # checking if the retrace is a D leg allows pattern completion 
                 # to hit within the candle but not be limited to the peak
                 fit.add(pattern)
@@ -366,6 +370,7 @@ class HarmonicPatterns(TABase):
             XCD = CD/XC,
             ABC = BC/AB,
             XAC = XC/XA,
+            BCD = CD/BC
         )
         fits = self._match(retraces['XAB'], 'XAB', 'HARMONICS')
         fits = fits | self._match(retraces['XAB'], 'XAB', 'CYPHERS')
@@ -376,18 +381,26 @@ class HarmonicPatterns(TABase):
             s_fits = fits & self._match(retraces['ABC'], 'ABC', 'SHARKS', limit=fits)
             fits = h_fits | c_fits | s_fits
             if fits:
-                h_fits = fits & self._match(retraces['XAD'], 'XAD', 'HARMONICS', limit=fits)
-                c_fits = fits & self._match(retraces['XCD'], 'XCD', 'CYPHERS', limit=fits)
-                s_fits = fits & self._match(retraces['XCD'], 'XCD', 'SHARKS', limit=fits)
-                fits = h_fits | c_fits | s_fits
+                # BCD measurements are critical to harmonics, they account for fib time reaction too.
+                if h_fits:
+                    h_fits = fits & self._match(retraces['XAD'], 'XAD', 'HARMONICS', limit=h_fits)
+                    h_fits = fits & self._match(retraces['BCD'], 'BCD', 'HARMONICS', limit=h_fits)
+                if c_fits:
+                    c_fits = fits & self._match(retraces['XCD'], 'XCD', 'CYPHERS', limit=c_fits)
+                    # Cyphers got no BCD restriction
+                if s_fits:
+                    s_fits = fits & self._match(retraces['XCD'], 'XCD', 'SHARKS', limit=s_fits)
+                    s_fits = fits & self._match(retraces['BCD'], 'BCD', 'SHARKS', limit=s_fits)
                 pattern = self.create_pattern(
                     (X, A, B, C, D),
                     family = self.family,
                     name = ', '.join(s for s in fits),
                     retraces = retraces
                 )
+                fits = h_fits | c_fits | s_fits
                 if fits:
                     # print(status)
+                    # print(f"Pattern fits{fits}")
                     pattern.update(formed = True, name = ', '.join(s for s in fits))
         
         return pattern

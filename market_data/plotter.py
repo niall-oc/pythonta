@@ -116,7 +116,7 @@ class Plotter:
         for p in patterns:                
             if len(p.idx) == 5:
                 # 5 point m or w formations
-                text = [f'X {p.y[0]}', f'A {p.name}', f"B {p.retraces['XAB']:0.3f}", f"C {p.retraces['ABC']:0.3f}", f"D {p.retraces['XAD']:0.3f}"]
+                text = [f'X {p.y[0]}', f'A {p.name}', f"B {p.y[1]:0.3f} fib {p.retraces['XAB']}", f"C {p.y[2]:0.3f} fib {p.retraces['ABC']:0.3f}", ""]
                 lt = p.idx[0:3]+p.idx[:1]
                 rt = p.idx[2:]+p.idx[2:3]
                 lp = p.y[0:3]+p.y[:1]
@@ -147,7 +147,7 @@ class Plotter:
                 )
             else:
                 # 4 point ABCD drives
-                text = [f"A {p.y[0]:.3f} ABCD", f"B {p.y[1]:.3f}", f"C {p.retraces['ABC']:0.3f}", f"D {p.retraces['BCD']:0.3f}"]
+                text = [f"A {p.y[0]:.3f} ABCD", f"B {p.y[1]:.3f}", f"C {p.y[2]:0.3f} fib {p.retraces['ABC']}", ""]
                 self.main_plot.add_trace(
                     go.Scatter(
                         mode="lines+text",
@@ -174,7 +174,6 @@ class Plotter:
                     mode="lines+markers+text",
                     x=self.mkt_data.df.index.values[p.idx],
                     y=p.y,
-                    #fill="toself",
                     line=dict(color=color, width=2),
                     #text=text[0:3],
                     #textposition="top center"
@@ -209,6 +208,35 @@ class Plotter:
                                  line=dict(color='orange', width=2)
                                 ), row=self.ROW_MAP['obs'], col=1)
         self.main_plot.update_yaxes(title_text="OBS", row=self.ROW_MAP['obs'], col=1)
+    
+    def add_targets(self, patterns, up_to=1.618):
+        """
+        This can make a chart very messy.  However passing the newest pattern to it solves that.
+        It is at your discretion which patterns you wish to add.
+        """
+        for p in patterns:
+            self.main_plot.add_trace(
+                go.Scatter(
+                    mode="text",
+                    x=self.mkt_data.df.index.values[[p.idx[-1], p.idx[-1]-10]],
+                    y=[p.y[-1], p.y[-1]], 
+                    line=dict(color='lightgrey'),
+                    text=[f"{p.name} - entry price{p.y[-1]}", "     "], 
+                    textposition="top left"
+                )
+            )
+            for target, price in p.target_prices.items():
+                if not up_to or target <= up_to:
+                    self.main_plot.add_trace(
+                        go.Scatter(
+                            mode="lines+text",
+                            x=self.mkt_data.df.index.values[[p.idx[-1], p.idx[-1]-10]],
+                            y=[price, price], 
+                            line=dict(color='lightgrey'),
+                            text=[f"{target} target - price: {price:2.3f}", ""], 
+                            textposition="top left"
+                        )
+                    )
     
     def save_plot_image(self, location):
         self.main_plot.update_layout(

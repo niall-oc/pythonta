@@ -18,7 +18,7 @@
 
 # Full file path to markets.  See markets.yaml for description of markets config file.
 # You can override this on the command line using --markets /path/to/alternative.yaml
-markets: debug_markets.yaml
+markets: markets.yaml
 
 # Full Path to Harmonics file. See harmonics.yaml for a description of the harmonics config file
 # You can override this on the command line using --markets /path/to/alternative.yaml
@@ -26,7 +26,9 @@ harmonics: harmonics.yaml
 #harmonics: false 
                                                                                               
 # The path where your trend images will be saved.  Override on the command line using --output_path /home/your/preferred/output/folder
-output_path: /home/xual/Pictures/patterns                                                                                                
+output_path: /home/xual/Pictures/patterns
+
+log_level: DEBUG
                                                                                                    
 # ___                            __                         
 #  |  ._ _|_  _  ._ ._   _. |   (_   _ _|_ _|_ o ._   _   _ 

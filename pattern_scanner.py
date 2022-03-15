@@ -129,10 +129,11 @@ def scan_patterns(configuration, market, symbols):
         if harmonic_patterns:
             logger.debug(str(harmonic_patterns[-1]))
             p = Plotter(m, yahoo=bool(market.lower() == "yahoo"))
-            p.add_harmonic_plots(harmonic_patterns)
+            p.add_harmonic_plots([harmonic_patterns[-1]])
             p.add_divergence_plots(divergences)
             p.add_head_shoulders_plots(hands_patterns)
             p.add_peaks(h)
+            # p.add_targets([harmonic_patterns[-1]])
             p.add_obs(m.obs_values)
             filename = f"{symbol}_{configuration['interval']}.png"
             image_path = os.path.join(configuration['output_path'], filename)
