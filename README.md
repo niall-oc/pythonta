@@ -52,9 +52,9 @@ Using the command promt on windows or the shell on linux.
 
 1. Linux ```cd /home/me/code/pythonta-main```. Windows ```cd c:\users\me\code\pythonta-main```
 2. linux ```source venv/bin/activate```. Windows ```venv\Scripts\activate```
-3. scan binance on the 1h ```python3 pattern_scanner.py binance_scanner.yaml --interval 1h```
-4. scan AAPL for patterns that completed in the last week. ```python3 pattern_scanner.py yahoo_scanner.yaml --interval 1d --limit_to 7```
-5. scan BTCUSDT for patterns that are forming right now. ```python3 pattern_scanner.py binance_scanner.yaml --interval 15m --limit_to 5```
+3. scan binance on the 1h ```python3 pattern_scanner.py settings.yaml binance_markets.yaml --interval 1h```
+4. scan AAPL for patterns that completed in the last week. ```python3 pattern_scanner.py settings.yaml yahoo_markets.yaml --interval 1d --limit_to 7```
+5. scan BTCUSDT for patterns that are forming right now. ```python3 pattern_scanner.py settings.yaml --symbol binance:BTCUSDT --interval 15m --limit_to 5```
 
 
 
