@@ -210,10 +210,6 @@ class HarmonicPatterns(TABase):
                                         pattern = self._is_5_harmonic(X, A, B, C, D)
                                         if pattern:
                                             self.add_pattern(pattern, 'bullish')
-                                        
-                                        pattern = self._is_abcd(X, A, B, C)
-                                        if pattern:
-                                            self.add_pattern(pattern, 'bearish')
 
     
     def w_scan_from(self, D):
@@ -269,10 +265,6 @@ class HarmonicPatterns(TABase):
                                         pattern = self._is_5_harmonic(X, A, B, C, D)
                                         if pattern:
                                             self.add_pattern(pattern, 'bearish')
-                                        
-                                        pattern = self._is_abcd(X, A, B, C)
-                                        if pattern:
-                                            self.add_pattern(pattern, 'bullish')
                                             
     def add_pattern(self, pattern, direction):
         pattern.update(
@@ -416,4 +408,5 @@ class HarmonicPatterns(TABase):
     def matrix_search(self, limit_to=0, formed=True, only='all'):
         """
         """
+        pass
         

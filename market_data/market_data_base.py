@@ -12,6 +12,17 @@ from scipy.signal import argrelextrema
 import numpy as np
 
 class MktDataBase:
+    """
+    ALL data apis convert Kline or tred data into a pandas dataframe.
+    The market_data dataframe uses DateTime as the index and 
+    [OPEN, HIGH, LOW, CLOSE, VOLUME] as column headers.
+
+    MACD, RSI, MFI and StockRSI are calculated on any trend.
+
+    Peaks and fibonacci levels are recorded.
+
+    THis forms the basis for any pattern detection.
+    """
     OPEN_TIME = 'open_time'
     CLOSE_TIME = 'close_time'
     OPEN = 'open'
@@ -32,7 +43,7 @@ class MktDataBase:
     mfi = None
     source = None
 
-    def __init__(self, indicator_config=None):
+    def __init__(self, indicator_config=None, fibonnaci_variance=.03):
         self.INDICATOR_CONFIG = indicator_config or {
             'macd': {'window_slow': 26, 'window_fast': 12, 'window_sign': 9},
             'stoch_rsi': {'window': 14, 'smooth_window': 3},
@@ -43,12 +54,13 @@ class MktDataBase:
         self.df = None
         self.symbol = None
         self.interval = None
+        self.fibonnaci_variance = fibonnaci_variance
     
     def post_ticker_setup(self, peak_spacing=6):
         if len(self.df):
             self.set_indicators()
             self.set_peaks(peak_spacing=peak_spacing)
-            # self.set_fib_matrix()
+            self.set_fib_matrix()
 
     def merge_obs(self, array):
         for i in range(len(self.obs_values)):
@@ -238,6 +250,3 @@ class MktDataBase:
             volume=self.df[self.VOLUME],
             **self.INDICATOR_CONFIG['mfi']
         )
-    
-    
-    
