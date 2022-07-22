@@ -1,0 +1,1 @@
+filter_query: "cap_largeover,geo_usa,idx_sp500,ind_stocksonly,sh_avgvol_o1000,sh_opt_option,sh_price_o30"

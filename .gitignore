@@ -130,3 +130,4 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+finviz_found_yahoo.yaml
